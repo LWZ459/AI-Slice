@@ -117,10 +117,19 @@ python run.py
 ### Access Points
 
 - **API**: http://localhost:8000
-- **Interactive Docs**: http://localhost:8000/docs
 - **Health Check**: http://localhost:8000/health
 
 **That's it!** You now have a running AI-Slice server.
+
+### 📮 Testing with Postman
+
+**Import the collection:**
+1. Open Postman
+2. Click **Import** → **File**
+3. Select: `AI-Slice.postman_collection.json`
+4. Start testing 42 pre-configured endpoints!
+
+The collection includes auto-token management - just login and the JWT is saved automatically.
 
 ---
 
@@ -171,13 +180,42 @@ python run.py
 **Performance Rules**: Same as chefs
 
 ### 6. Manager
-- Process customer registrations
+- Process customer registrations (approve/reject)
 - Handle all complaints/compliments
 - Make final decisions on disputes
 - Hire, fire, promote, demote employees
 - Assign deliveries (with justification if overriding)
 - Review AI responses
 - Manage knowledge base
+
+**🔐 Manager Creation**:
+
+Managers must be created using a special bootstrap endpoint with a secret code:
+
+```bash
+POST /api/manager/create-manager
+{
+  "username": "admin",
+  "email": "admin@aislice.com",
+  "password": "secure_password",
+  "full_name": "Admin User",
+  "secret_code": "create-manager-2025"
+}
+```
+
+**⚠️ Security Note**: The secret code (`create-manager-2025`) should be changed in production and stored securely.
+
+**📋 Customer Approval Workflow**:
+
+1. **New users register** → Status: `PENDING`
+2. **Manager reviews** → `GET /api/manager/pending-registrations`
+3. **Manager approves** → `POST /api/manager/approve-customer/{user_id}` → Status: `ACTIVE`
+4. **OR Manager rejects** → `POST /api/manager/reject-customer/{user_id}?reason=...` → Status: `DEACTIVATED`
+
+**Quick Approve All** (for testing):
+```bash
+POST /api/manager/activate-all-users
+```
 
 ---
 
@@ -524,11 +562,15 @@ Tracks and manages user reputation.
 
 ## 📚 API Documentation
 
-Once running, visit:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+### 📮 Postman Collection
 
-### Key Endpoints (To Be Implemented)
+Import `AI-Slice.postman_collection.json` into Postman for:
+- ✅ 42 pre-configured API requests
+- ✅ Auto-token management (JWT saved after login)
+- ✅ Sample request bodies
+- ✅ Organized into 7 categories
+
+### Key Endpoints
 
 **Authentication**
 - `POST /api/auth/register` - Register new user

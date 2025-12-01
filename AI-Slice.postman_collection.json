@@ -891,6 +891,108 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Manager",
+			"item": [
+				{
+					"name": "Create Manager (Bootstrap)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"email\": \"admin@aislice.com\",\n    \"password\": \"admin123\",\n    \"full_name\": \"Admin User\",\n    \"secret_code\": \"create-manager-2025\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/manager/create-manager",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manager", "create-manager"]
+						},
+						"description": "Bootstrap endpoint to create the first manager. Requires secret code."
+					}
+				},
+				{
+					"name": "List Pending Registrations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{"key": "token", "value": "{{auth_token}}", "type": "string"}]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/manager/pending-registrations?skip=0&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manager", "pending-registrations"],
+							"query": [
+								{"key": "skip", "value": "0"},
+								{"key": "limit", "value": "20"}
+							]
+						},
+						"description": "Get all users waiting for manager approval (Manager only)."
+					}
+				},
+				{
+					"name": "Approve Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{"key": "token", "value": "{{auth_token}}", "type": "string"}]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/manager/approve-customer/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manager", "approve-customer", "1"]
+						},
+						"description": "Approve a pending customer registration (Manager only). Change user_id in URL."
+					}
+				},
+				{
+					"name": "Reject Customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{"key": "token", "value": "{{auth_token}}", "type": "string"}]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/manager/reject-customer/1?reason=Invalid registration information",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manager", "reject-customer", "1"],
+							"query": [
+								{"key": "reason", "value": "Invalid registration information"}
+							]
+						},
+						"description": "Reject a pending customer registration with reason (Manager only)."
+					}
+				},
+				{
+					"name": "Activate All Users (Testing)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{"key": "token", "value": "{{auth_token}}", "type": "string"}]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/manager/activate-all-users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manager", "activate-all-users"]
+						},
+						"description": "Bulk approve all pending users (Manager only). For testing purposes."
+					}
+				}
+			]
 		}
 	]
 }
