@@ -23,8 +23,7 @@ router = APIRouter()
 async def ask_question(
     question_data: QuestionRequest,
     request: Request,
-    db: Session = Depends(get_db),
-    current_user: Optional[User] = None
+    db: Session = Depends(get_db)
 ):
     """
     Ask a question to the AI assistant.
@@ -36,8 +35,8 @@ async def ask_question(
     System tries local knowledge base first, then falls back to LLM if needed.
     You can rate answers from the knowledge base to improve quality.
     """
-    # Get user info if authenticated
-    user_id = current_user.id if current_user else None
+    # Get user info if authenticated (visitors can also ask)
+    user_id = None  # TODO: Get from optional auth
     
     # Get client IP
     client_ip = request.client.host if request.client else None
@@ -71,7 +70,6 @@ async def ask_question(
 @router.post("/rate", response_model=dict)
 async def rate_answer(
     rating_data: AnswerRating,
-    current_user: Optional[User] = None,
     db: Session = Depends(get_db)
 ):
     """

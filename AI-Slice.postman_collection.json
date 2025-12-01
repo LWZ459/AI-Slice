@@ -1,0 +1,897 @@
+{
+	"info": {
+		"_postman_id": "ai-slice-collection-001",
+		"name": "AI-Slice API",
+		"description": "Complete API collection for AI-Slice - AI-enabled restaurant order and delivery system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "System",
+			"item": [
+				{
+					"name": "Root - Get API Info",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": ["{{base_url}}"],
+							"path": [""]
+						}
+					}
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"User created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('username');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"ahmed@aislice.com\",\n    \"username\": \"ahmed\",\n    \"password\": \"password123\",\n    \"full_name\": \"Ahmed H\",\n    \"phone\": \"1234567890\",\n    \"user_type\": \"customer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Token received\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.collectionVariables.set(\"auth_token\", jsonData.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "ahmed",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "me"]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Menu & Dishes",
+			"item": [
+				{
+					"name": "Browse Menu",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/menu/?limit=20&skip=0",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menu", ""],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "search",
+									"value": "pizza",
+									"disabled": true
+								},
+								{
+									"key": "min_price",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "max_price",
+									"value": "50",
+									"disabled": true
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Dish by ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/menu/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menu", "1"]
+						}
+					}
+				},
+				{
+					"name": "Get Menu Recommendations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/menu/recommendations?time_of_day=dinner",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menu", "recommendations"],
+							"query": [
+								{
+									"key": "time_of_day",
+									"value": "dinner"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Dish (Chef Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Margherita Pizza\",\n    \"description\": \"Classic pizza with tomato, mozzarella, and basil\",\n    \"price\": 12.99,\n    \"category_id\": 1,\n    \"tags\": \"italian,vegetarian,pizza\",\n    \"is_special\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/menu/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menu", ""]
+						}
+					}
+				},
+				{
+					"name": "Update Dish (Chef Only)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Margherita Pizza (Updated)\",\n    \"price\": 13.99,\n    \"is_available\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/menu/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menu", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Dish (Chef Only)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/menu/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menu", "1"]
+						}
+					}
+				},
+				{
+					"name": "List Categories",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/menu/categories/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "menu", "categories", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": [\n        {\n            \"dish_id\": 1,\n            \"quantity\": 2\n        },\n        {\n            \"dish_id\": 2,\n            \"quantity\": 1\n        }\n    ],\n    \"delivery_address\": \"123 Main St, City, State 12345\",\n    \"delivery_instructions\": \"Ring doorbell twice\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", ""]
+						}
+					}
+				},
+				{
+					"name": "List My Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders/?skip=0&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", ""],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "status_filter",
+									"value": "placed",
+									"disabled": true
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Order by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1"]
+						}
+					}
+				},
+				{
+					"name": "Rate Order",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"food_rating\": 5.0,\n    \"delivery_rating\": 4.5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/1/rate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1", "rate"]
+						}
+					}
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Delivery & Bidding",
+			"item": [
+				{
+					"name": "List Available Deliveries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/delivery/available",
+							"host": ["{{base_url}}"],
+							"path": ["api", "delivery", "available"]
+						}
+					}
+				},
+				{
+					"name": "Place Bid on Delivery",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bid_amount\": 5.50,\n    \"estimated_time\": 25,\n    \"notes\": \"I can deliver quickly\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/delivery/1/bid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "delivery", "1", "bid"]
+						}
+					}
+				},
+				{
+					"name": "View All Bids (Manager)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/delivery/1/bids",
+							"host": ["{{base_url}}"],
+							"path": ["api", "delivery", "1", "bids"]
+						}
+					}
+				},
+				{
+					"name": "Auto-Assign Delivery (Manager)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/delivery/1/auto-assign",
+							"host": ["{{base_url}}"],
+							"path": ["api", "delivery", "1", "auto-assign"]
+						}
+					}
+				},
+				{
+					"name": "Manual Assign Delivery (Manager)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"delivery_person_id\": 1,\n    \"justification\": \"This delivery person has better ratings and is closer to the location\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/delivery/1/assign",
+							"host": ["{{base_url}}"],
+							"path": ["api", "delivery", "1", "assign"]
+						}
+					}
+				},
+				{
+					"name": "Update Delivery Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"picked_up\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/delivery/1/status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "delivery", "1", "status"]
+						}
+					}
+				},
+				{
+					"name": "Get My Deliveries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/delivery/my-deliveries?skip=0&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "delivery", "my-deliveries"],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Delivery Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/delivery/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "delivery", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "AI Chat & Recommendations",
+			"item": [
+				{
+					"name": "Ask Question",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"What are your most popular dishes?\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ai/ask",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ai", "ask"]
+						}
+					}
+				},
+				{
+					"name": "Rate AI Answer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chat_log_id\": 1,\n    \"rating\": 5,\n    \"feedback\": \"Very helpful answer!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ai/rate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ai", "rate"]
+						}
+					}
+				},
+				{
+					"name": "Get AI Menu Recommendations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ai/recommendations?time_of_day=lunch",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ai", "recommendations"],
+							"query": [
+								{
+									"key": "time_of_day",
+									"value": "lunch"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "List Knowledge Base (Manager)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ai/knowledge-base?skip=0&limit=50&flagged_only=false",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ai", "knowledge-base"],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "flagged_only",
+									"value": "false"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create KB Entry (Manager)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"What are your opening hours?\",\n    \"answer\": \"We are open Monday-Sunday, 11am-10pm\",\n    \"category\": \"restaurant_info\",\n    \"tags\": \"hours,opening,time\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ai/knowledge-base",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ai", "knowledge-base"]
+						}
+					}
+				},
+				{
+					"name": "Update KB Entry (Manager)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"question\": \"What are your opening hours?\",\n    \"answer\": \"We are open Monday-Sunday, 11am-11pm (Updated)\",\n    \"category\": \"restaurant_info\",\n    \"tags\": \"hours,opening,time\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ai/knowledge-base/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ai", "knowledge-base", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete KB Entry (Manager)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ai/knowledge-base/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ai", "knowledge-base", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Reputation & Complaints",
+			"item": [
+				{
+					"name": "File Complaint",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subject_id\": 2,\n    \"title\": \"Late delivery\",\n    \"description\": \"Order arrived 45 minutes late and food was cold\",\n    \"order_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reputation/complaint",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reputation", "complaint"]
+						}
+					}
+				},
+				{
+					"name": "Give Compliment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"receiver_id\": 2,\n    \"title\": \"Excellent service\",\n    \"description\": \"Very friendly and professional delivery person\",\n    \"order_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reputation/compliment",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reputation", "compliment"]
+						}
+					}
+				},
+				{
+					"name": "List Complaints",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reputation/complaints?skip=0&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reputation", "complaints"],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "status_filter",
+									"value": "pending",
+									"disabled": true
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Complaint Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reputation/complaints/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reputation", "complaints", "1"]
+						}
+					}
+				},
+				{
+					"name": "Dispute Complaint",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dispute_reason\": \"The customer was not available at the delivery address. I waited 15 minutes and called twice.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reputation/complaints/1/dispute",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reputation", "complaints", "1", "dispute"]
+						}
+					}
+				},
+				{
+					"name": "Manager Decision on Complaint",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"decision\": \"After reviewing evidence, the complaint is valid. Warning issued to delivery personnel.\",\n    \"action\": \"warn_subject\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reputation/complaints/1/decide",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reputation", "complaints", "1", "decide"]
+						}
+					}
+				},
+				{
+					"name": "Get User Reputation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reputation/2/reputation",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reputation", "2", "reputation"]
+						}
+					}
+				},
+				{
+					"name": "Get My Warnings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reputation/my-warnings",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reputation", "my-warnings"]
+						}
+					}
+				},
+				{
+					"name": "Issue Warning (Manager)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 2,\n    \"reason\": \"Multiple late deliveries without valid justification\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reputation/warn",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reputation", "warn"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
+

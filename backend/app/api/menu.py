@@ -23,14 +23,13 @@ router = APIRouter()
 async def browse_menu(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    category_id: Optional[int] = None,
-    chef_id: Optional[int] = None,
-    search: Optional[str] = None,
-    min_price: Optional[float] = None,
-    max_price: Optional[float] = None,
-    include_special: bool = False,
-    db: Session = Depends(get_db),
-    current_user: Optional[User] = None
+    category_id: Optional[int] = Query(None),
+    chef_id: Optional[int] = Query(None),
+    search: Optional[str] = Query(None),
+    min_price: Optional[float] = Query(None),
+    max_price: Optional[float] = Query(None),
+    include_special: bool = Query(False),
+    db: Session = Depends(get_db)
 ):
     """
     Browse available dishes.
@@ -62,15 +61,9 @@ async def browse_menu(
     if max_price is not None:
         query = query.filter(Dish.price <= max_price)
     
-    # Filter special dishes for non-VIP
+    # Filter special dishes (VIP only)
     if not include_special:
         query = query.filter(Dish.is_special == False)
-    elif current_user:
-        # Check if user is VIP
-        if current_user.user_type != UserType.VIP:
-            customer = db.query(Customer).filter(Customer.user_id == current_user.id).first()
-            if not customer or not customer.is_vip:
-                query = query.filter(Dish.is_special == False)
     
     dishes = query.order_by(Dish.times_ordered.desc()).offset(skip).limit(limit).all()
     
