@@ -37,11 +37,22 @@ const AIChat = () => {
         id: messages.length + 2,
         text: getAIResponse(inputMessage),
         sender: 'ai',
-        fromLocalKB: Math.random() > 0.5 // Simulate local KB vs LLM
+        fromLocalKB: Math.random() > 0.5, // Simulate local KB vs LLM
+        rating: null // Add rating field
       };
       setMessages(prev => [...prev, aiResponse]);
       setIsTyping(false);
     }, 1000);
+  };
+
+  const handleRateAnswer = (messageId, rating) => {
+    setMessages(prevMessages => 
+      prevMessages.map(msg => 
+        msg.id === messageId ? { ...msg, rating } : msg
+      )
+    );
+    // TODO: Send rating to backend
+    console.log(`Rated message ${messageId} with ${rating} stars`);
   };
 
   const getAIResponse = (query) => {
@@ -77,6 +88,21 @@ const AIChat = () => {
                 {message.text}
                 {message.fromLocalKB && message.sender === 'ai' && (
                   <span className="kb-badge">From Knowledge Base</span>
+                )}
+                {message.sender === 'ai' && (
+                  <div className="message-rating">
+                    <span className="rating-label">Rate this answer:</span>
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <button
+                        key={star}
+                        className={`star-btn ${message.rating >= star ? 'active' : ''}`}
+                        onClick={() => handleRateAnswer(message.id, star)}
+                        disabled={message.rating !== null}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 import './MenuBrowse.css';
 
 const MenuBrowse = () => {
   const { addToCart } = useCart();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [dishes] = useState([
     { id: 1, name: 'Margherita Pizza', chef: 'Chef Mario', price: 12.99, rating: 4.8, available: true },
@@ -18,6 +20,8 @@ const MenuBrowse = () => {
     dish.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     dish.chef.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const recommendations = dishes.filter(d => d.rating >= 4.8).slice(0, 3);
 
   const handleAddToCart = (dish) => {
     addToCart(dish);
@@ -36,6 +40,38 @@ const MenuBrowse = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
+
+      {user && !searchTerm && (
+        <div className="recommendations-section">
+          <h2>Recommended for You</h2>
+          <p className="section-subtitle">Based on your taste and popular items</p>
+          <div className="dishes-grid recommendations-grid">
+            {recommendations.map(dish => (
+              <div key={`rec-${dish.id}`} className="dish-card">
+                <div className={`dish-image pattern-${dish.id % 3 + 1}`}>
+                  <span className="recommendation-badge">Top Pick</span>
+                </div>
+                <div className="dish-content">
+                  <div className="dish-header">
+                    <h3 className="dish-name">{dish.name}</h3>
+                    <span className="dish-price-badge">${dish.price.toFixed(2)}</span>
+                  </div>
+                  <p className="dish-chef">by {dish.chef}</p>
+                  <div className="dish-rating">
+                    <span>★ {dish.rating}</span>
+                  </div>
+                  <button 
+                    className="btn btn-primary btn-sm"
+                    onClick={() => handleAddToCart(dish)}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="dishes-grid">
         {filteredDishes.map((dish, index) => {
