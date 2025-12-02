@@ -1,0 +1,149 @@
+.bidding-page {
+  padding: 20px 0;
+}
+
+.bidding-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+.bidding-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bidding-card h2 {
+  font-size: 24px;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.order-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.info-value {
+  color: #333;
+  text-align: right;
+}
+
+.base-price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.bid-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #333;
+}
+
+.form-hint {
+  font-size: 14px;
+  color: #999;
+  margin-top: 5px;
+}
+
+.bids-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.no-bids {
+  text-align: center;
+  color: #999;
+  padding: 40px 0;
+}
+
+.bid-item {
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bid-person {
+  font-weight: 600;
+  color: #333;
+}
+
+.bid-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.bid-amount {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.bid-time {
+  font-size: 12px;
+  color: #999;
+}
+
+.bids-note {
+  margin-top: 20px;
+  padding: 15px;
+  background: #ecf0f1;
+  border-radius: 8px;
+  border-left: 4px solid #7f8c8d;
+}
+
+.bids-note p {
+  color: #5a6c7d;
+  font-size: 14px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .bidding-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .info-value {
+    text-align: left;
+  }
+}
+

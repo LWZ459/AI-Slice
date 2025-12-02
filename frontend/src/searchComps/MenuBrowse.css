@@ -1,0 +1,247 @@
+.menu-browse {
+  padding: 20px 0;
+}
+
+.page-title {
+  font-size: 36px;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.search-section {
+  margin-bottom: 30px;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 600px;
+  padding: 15px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.05);
+}
+
+.dishes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  grid-auto-rows: auto;
+}
+
+.dish-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid #e8e8e8;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.dish-card-wide {
+  grid-column: span 2;
+}
+
+.dish-image {
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 2px solid #d5dbdb;
+  flex-shrink: 0;
+  display: block;
+}
+
+.dish-card-wide .dish-image {
+  height: 240px;
+  min-height: 240px;
+}
+
+/* Pattern variations */
+.pattern-1 {
+  background: linear-gradient(135deg, #ecf0f1 0%, #d5dbdb 100%);
+  background-image: 
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(44, 62, 80, 0.03) 10px, rgba(44, 62, 80, 0.03) 20px);
+}
+
+.pattern-2 {
+  background: linear-gradient(45deg, #ecf0f1 25%, #d5dbdb 25%, #d5dbdb 50%, #ecf0f1 50%, #ecf0f1 75%, #d5dbdb 75%);
+  background-size: 30px 30px;
+}
+
+.pattern-3 {
+  background: radial-gradient(circle at 20% 50%, #ecf0f1 0%, #d5dbdb 50%, #ecf0f1 100%);
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(44, 62, 80, 0.02) 2px, rgba(44, 62, 80, 0.02) 4px);
+}
+
+
+.dish-content {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dish-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 15px;
+}
+
+.dish-name {
+  font-size: 22px;
+  margin: 0;
+  color: #2c3e50;
+  font-weight: 600;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.dish-price-badge {
+  background-color: #34495e;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dish-card-wide .dish-name {
+  font-size: 26px;
+}
+
+.dish-chef {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.dish-rating {
+  margin-bottom: 20px;
+  padding: 8px 0;
+  border-top: 1px solid #ecf0f1;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.dish-rating span {
+  color: #5a6c7d;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.dish-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
+}
+
+.quantity-btn {
+  background-color: #f8f9fa;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  transition: background-color 0.2s ease;
+  min-width: 36px;
+}
+
+.quantity-btn:hover:not(:disabled) {
+  background-color: #e9ecef;
+}
+
+.quantity-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quantity-input {
+  width: 50px;
+  padding: 8px 4px;
+  border: none;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  background: white;
+  -moz-appearance: textfield;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantity-input:focus {
+  outline: none;
+}
+
+.quantity-input:disabled {
+  background-color: #f8f9fa;
+  color: #7f8c8d;
+}
+
+.dish-footer .btn {
+  flex: 1;
+  min-width: 0;
+}
+
+.dish-card-wide .dish-footer {
+  justify-content: flex-start;
+}
+
+.dish-card-wide .dish-footer .btn {
+  max-width: 300px;
+  flex: 0 1 auto;
+}
+
+@media (max-width: 1024px) {
+  .dish-card-wide {
+    grid-column: span 1;
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .dishes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

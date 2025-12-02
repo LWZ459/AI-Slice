@@ -1,0 +1,484 @@
+.manager-dashboard {
+  padding: 20px 0;
+}
+
+.dashboard-title {
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: #2c3e50;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.staff-management-card {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.dashboard-card {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8e8e8;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.dashboard-card h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-weight: 600;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 10px;
+}
+
+.registrations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.registration-item {
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.reg-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.reg-info h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.reg-info p {
+  color: #666;
+  margin: 4px 0;
+}
+
+.reg-date {
+  font-size: 14px;
+  color: #999;
+}
+
+.reg-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.reg-actions .btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+.reg-actions .btn-success {
+  background-color: #9CAF88;
+  color: white;
+}
+
+.reg-actions .btn-success:hover {
+  background-color: #A8BA95;
+}
+
+.reg-actions .btn-danger,
+.reg-actions .btn-secondary {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.reg-actions .btn-danger:hover,
+.reg-actions .btn-secondary:hover {
+  background-color: #c0392b;
+}
+
+.assignments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.assignment-card {
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.assignment-card h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.bids-review {
+  margin-bottom: 15px;
+}
+
+.bids-review h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.bid-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border: 2px solid transparent;
+}
+
+.bid-row.lowest {
+  border-color: #2c3e50;
+  background: #ecf0f1;
+}
+
+.bid-amount {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.lowest-bid {
+  padding: 10px;
+  background: #ecf0f1;
+  border-radius: 6px;
+  margin: 15px 0;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.assignment-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.assignment-actions .btn {
+  flex: 1;
+  min-width: 150px;
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+.assignment-actions .btn-primary {
+  background-color: #8B6F5E;
+  color: white;
+}
+
+.assignment-actions .btn-primary:hover {
+  background-color: #A67C7C;
+}
+
+.assignment-actions .btn-secondary {
+  background-color: #B88A7A;
+  color: white;
+}
+
+.assignment-actions .btn-secondary:hover {
+  background-color: #C99A7C;
+}
+
+.hr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.hr-item {
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hr-item .btn {
+  flex-shrink: 0;
+  padding: 10px 20px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.hr-item .btn-primary {
+  background-color: #8B6F5E;
+  color: white;
+}
+
+.hr-item .btn-primary:hover {
+  background-color: #A67C7C;
+}
+
+.hr-type {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  min-width: 100px;
+  text-align: center;
+}
+
+.hr-type.warning {
+  background: #ecf0f1;
+  color: #7f8c8d;
+}
+
+.hr-type.compliment {
+  background: #d5dbdb;
+  color: #2c3e50;
+}
+
+.hr-details {
+  flex: 1;
+}
+
+.hr-details h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.hr-details p {
+  color: #666;
+  margin: 4px 0;
+}
+
+.hr-date {
+  font-size: 14px;
+  color: #999;
+}
+
+.staff-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.staff-item {
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #ecf0f1;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.staff-item:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.staff-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.staff-info {
+  flex: 1;
+}
+
+.staff-info h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.staff-role {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
+.staff-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.staff-status.active {
+  background: #d5f4e6;
+  color: #27ae60;
+}
+
+.staff-status.on-leave {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.staff-status.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.staff-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 6px;
+  flex: 1;
+}
+
+.metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.metric-item:last-child {
+  border-bottom: none;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.metric-value.rating.high {
+  color: #27ae60;
+}
+
+.metric-value.rating.medium {
+  color: #f39c12;
+}
+
+.metric-value.rating.low {
+  color: #e74c3c;
+}
+
+.metric-value.warnings.has-warnings {
+  color: #e74c3c;
+}
+
+.metric-value.compliments {
+  color: #3498db;
+}
+
+.staff-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-small {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.btn-warning {
+  background-color: #f39c12;
+  color: white;
+}
+
+.btn-warning:hover {
+  background-color: #e67e22;
+}
+
+@media (max-width: 768px) {
+  .registration-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .reg-info {
+    min-width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .reg-actions {
+    width: 100%;
+    flex-direction: row;
+    justify-content: stretch;
+  }
+  
+  .reg-actions .btn {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .hr-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .assignment-actions {
+    flex-direction: column;
+  }
+  
+  .assignment-actions .btn {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .hr-item .btn {
+    width: 100%;
+  }
+  
+  .staff-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .staff-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .staff-actions {
+    flex-direction: column;
+  }
+  
+  .staff-actions .btn {
+    width: 100%;
+  }
+}
+

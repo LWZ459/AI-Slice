@@ -1,0 +1,191 @@
+.chef-dashboard {
+  padding: 20px 0;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.dishes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.dish-item {
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.dish-info {
+  margin-bottom: 15px;
+}
+
+.dish-info h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.dish-info p {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.status-badge.available {
+  background: #d5dbdb;
+  color: #2c3e50;
+}
+
+.status-badge.unavailable {
+  background: #ecf0f1;
+  color: #7f8c8d;
+}
+
+.orders-count {
+  color: #666;
+  font-size: 14px;
+}
+
+.dish-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-small {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #667eea;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-small:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.order-card {
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.order-id {
+  font-weight: bold;
+  color: #333;
+}
+
+.order-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.order-status.placed {
+  background: #ecf0f1;
+  color: #7f8c8d;
+}
+
+.order-status.preparing {
+  background: #d5dbdb;
+  color: #2c3e50;
+}
+
+.order-items {
+  margin-bottom: 10px;
+}
+
+.order-items p {
+  color: #666;
+  margin: 4px 0;
+}
+
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.order-time {
+  color: #999;
+  font-size: 14px;
+}
+
+.order-total {
+  font-weight: bold;
+  color: #333;
+}
+
+.stats-card {
+  background-color: #34495e;
+  color: white;
+  border-color: #2c3e50;
+}
+
+.stats-card h2 {
+  color: white;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
