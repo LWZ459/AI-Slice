@@ -1,0 +1,56 @@
+.rate-order-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+.rate-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.rate-card h1 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.rate-card p {
+  color: #7f8c8d;
+  margin-bottom: 2rem;
+}
+
+.star-rating-lg {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.star-btn-lg {
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  color: #bdc3c7;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.star-btn-lg.active {
+  color: #f1c40f;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+

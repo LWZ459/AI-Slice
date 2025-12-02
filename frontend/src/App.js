@@ -19,6 +19,9 @@ import MenuBrowse from './searchComps/MenuBrowse';
 import Checkout from './checkoutComps/Checkout';
 import BiddingPage from './biddingComps/BiddingPage';
 import NotFound from './404Page/NotFound';
+import AIChat from './discussionComps/AIChat';
+import Forums from './discussionComps/Forums';
+import RateOrder from './userComps/RateOrder';
 
 function App() {
   return (
@@ -34,6 +37,31 @@ function App() {
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/menu" element={<MenuBrowse />} />
+                <Route path="/chat" element={<AIChat />} />
+                <Route 
+                  path="/forums" 
+                  element={
+                    <ProtectedRoute requiredUserType="customer">
+                      <Forums />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/reviews" 
+                  element={
+                    <ProtectedRoute requiredUserType="customer">
+                      <RateOrder />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/delivery-reviews" 
+                  element={
+                    <ProtectedRoute requiredUserType="customer">
+                      <RateOrder />
+                    </ProtectedRoute>
+                  } 
+                />
                 <Route 
                   path="/customer" 
                   element={
