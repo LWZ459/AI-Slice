@@ -270,6 +270,24 @@ AI-Slice/
 │   ├── requirements.txt
 │   ├── run.py
 │   └── setup.py
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/      # Shared components
+│   │   ├── contexts/        # React Contexts (Auth, Cart)
+│   │   ├── config/          # API config
+│   │   ├── userComps/       # Customer pages
+│   │   ├── chefComps/       # Chef dashboard
+│   │   ├── deliveryComps/   # Delivery dashboard
+│   │   ├── managerComps/    # Manager dashboard
+│   │   ├── discussionComps/ # Chat & Forums
+│   │   ├── searchComps/     # Menu browsing
+│   │   ├── checkoutComps/   # Checkout flow
+│   │   ├── biddingComps/    # Delivery bidding
+│   │   ├── navComps/        # Navigation
+│   │   ├── App.js           # Main router
+│   │   └── index.js         # Entry point
+│   └── package.json
 ├── tests/
 ├── pseudocode.md                # Implementation pseudocode
 └── README.md                    # This file
