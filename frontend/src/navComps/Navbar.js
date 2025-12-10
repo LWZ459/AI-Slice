@@ -35,7 +35,7 @@ const Navbar = () => {
       delivery: '/delivery',
       manager: '/manager'
     };
-    return routes[user.userType] || '/customer';
+    return routes[user.user_type] || '/customer';
   };
 
   return (

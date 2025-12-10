@@ -4,6 +4,7 @@ Authentication API endpoints.
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from datetime import timedelta
 
 from ..core.database import get_db
@@ -119,8 +120,13 @@ async def login(
     
     Returns JWT access token that should be included in subsequent requests.
     """
-    # Find user by username
-    user = db.query(User).filter(User.username == form_data.username).first()
+    # Find user by username or email
+    user = db.query(User).filter(
+        or_(
+            User.username == form_data.username,
+            User.email == form_data.username
+        )
+    ).first()
     
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(

@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children, requiredUserType = null }) => {
   }
 
   // If a specific user type is required, check it
-  if (requiredUserType && user?.userType !== requiredUserType) {
+  if (requiredUserType && user?.user_type !== requiredUserType) {
     // Redirect to their dashboard if wrong user type
     const routes = {
       customer: '/customer',
@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children, requiredUserType = null }) => {
       delivery: '/delivery',
       manager: '/manager'
     };
-    const dashboardRoute = routes[user?.userType] || '/customer';
+    const dashboardRoute = routes[user?.user_type] || '/customer';
     return <Navigate to={dashboardRoute} replace />;
   }
 

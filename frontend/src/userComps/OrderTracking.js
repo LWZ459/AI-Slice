@@ -37,9 +37,14 @@ const OrderTracking = () => {
         return;
       }
 
-      // Fetch user's orders and find the specific one
-      const response = await axios.get(`${API_BASE_URL}/api/orders/user/${user.id}`);
-      const foundOrder = response.data.orders.find(o => o.id === parseInt(orderId));
+      // Fetch specific order directly
+      const response = await axios.get(`${API_BASE_URL}/api/orders/${orderId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      const foundOrder = response.data;
       
       if (foundOrder) {
         setOrder(foundOrder);
@@ -92,13 +97,13 @@ const OrderTracking = () => {
     
     let estimatedTotalMinutes;
     if (statusLower.includes('placed')) {
-      estimatedTotalMinutes = 45; // 30-45 minutes from placement
+      estimatedTotalMinutes = 30; // 15-30 minutes from placement (requested range)
     } else if (statusLower.includes('preparing')) {
-      estimatedTotalMinutes = 40; // ~40 minutes remaining
-    } else if (statusLower.includes('assigned')) {
       estimatedTotalMinutes = 25; // ~25 minutes remaining
+    } else if (statusLower.includes('assigned')) {
+      estimatedTotalMinutes = 20; // ~20 minutes remaining
     } else if (statusLower.includes('delivery') && !statusLower.includes('delivered')) {
-      estimatedTotalMinutes = 15; // ~15 minutes remaining
+      estimatedTotalMinutes = 10; // ~10 minutes remaining
     } else {
       estimatedTotalMinutes = 30; // Default
     }
@@ -141,7 +146,7 @@ const OrderTracking = () => {
   }
 
   const statusSteps = getStatusSteps(order.status);
-  const estimatedWaitTime = getEstimatedWaitTime(order.status, order.createdAt);
+  const estimatedWaitTime = getEstimatedWaitTime(order.status, order.created_at || order.createdAt);
 
   return (
     <div className="order-tracking">
@@ -149,7 +154,7 @@ const OrderTracking = () => {
         <div className="tracking-header">
           <Link to="/customer" className="back-link">← Back to Orders</Link>
           <h1>Order #{order.id}</h1>
-          <p className="order-date-full">Placed on {formatDate(order.createdAt)}</p>
+          <p className="order-date-full">Placed on {formatDate(order.created_at || order.createdAt)}</p>
         </div>
 
         <div className="tracking-card">
@@ -186,11 +191,11 @@ const OrderTracking = () => {
               order.items.map((item, idx) => (
                 <div key={idx} className="order-item-detailed">
                   <div className="item-info-detailed">
-                    <span className="item-name-detailed">{item.name}</span>
+                    <span className="item-name-detailed">{item.dish_name || item.name}</span>
                     <span className="item-quantity-detailed">Quantity: {item.quantity}</span>
                   </div>
                   <span className="item-price-detailed">
-                    ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
+                    ${((item.unit_price || item.price || 0) * (item.quantity || 1)).toFixed(2)}
                   </span>
                 </div>
               ))
@@ -207,15 +212,15 @@ const OrderTracking = () => {
               <span>Subtotal:</span>
               <span>${order.subtotal?.toFixed(2) || '0.00'}</span>
             </div>
-            {order.discount > 0 && (
+            {order.discount_amount > 0 && (
               <div className="summary-row-detailed vip-discount">
                 <span>VIP Discount (5%):</span>
-                <span>-${order.discount.toFixed(2)}</span>
+                <span>-${order.discount_amount.toFixed(2)}</span>
               </div>
             )}
             <div className="summary-row-detailed total">
               <span>Total:</span>
-              <span>${order.total?.toFixed(2) || '0.00'}</span>
+              <span>${order.total_amount?.toFixed(2) || '0.00'}</span>
             </div>
           </div>
         </div>

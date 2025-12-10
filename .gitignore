@@ -69,3 +69,4 @@ temp/
 uploads/
 static/uploads/
 
+node_modules/

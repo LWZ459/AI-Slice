@@ -51,7 +51,7 @@ const HomePage = () => {
       <section className="hero">
         <div className="hero-content">
           <h1 className="hero-title">AI Slice</h1>
-          <p className="hero-subtitle">Fresh Pizzas Made with Love • Fast Delivery • Order Now!</p>
+          <p className="hero-subtitle">Fresh Pizzas • Fast Delivery • Order Now!</p>
           <div className="hero-buttons">
             <Link to="/signup" className="btn btn-primary">Get Started</Link>
             <Link to="/signin" className="btn btn-secondary">Sign In</Link>
