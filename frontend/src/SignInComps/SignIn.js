@@ -8,8 +8,7 @@ import './SignIn.css';
 const SignIn = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    userType: 'customer'
+    password: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +24,7 @@ const SignIn = () => {
         delivery: '/delivery',
         manager: '/manager'
       };
-      navigate(routes[user.userType] || '/customer', { replace: true });
+      navigate(routes[user.user_type] || '/customer', { replace: true });
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -43,21 +42,31 @@ const SignIn = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/signin`, {
-        email: formData.email,
-        password: formData.password
+      // Create URLSearchParams for x-www-form-urlencoded
+      const params = new URLSearchParams();
+      params.append('username', formData.email); // Backend allows email as username
+      params.append('password', formData.password);
+
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, params, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
 
-      if (response.data.success) {
-        const user = response.data.user;
+      if (response.data.access_token) {
+        // Store token
+        const token = response.data.access_token;
+        localStorage.setItem('token', token);
         
-        // Verify user type matches selected type (optional check)
-        if (formData.userType && user.userType !== formData.userType) {
-          setError(`This account is registered as ${user.userType}, not ${formData.userType}`);
-          setLoading(false);
-          return;
-        }
-
+        // Fetch user details
+        const userResponse = await axios.get(`${API_BASE_URL}/api/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        const user = userResponse.data;
+        
         // Login user via AuthContext
         login(user);
 
@@ -68,10 +77,12 @@ const SignIn = () => {
           delivery: '/delivery',
           manager: '/manager'
         };
-        navigate(routes[user.userType] || '/customer');
+        // Use the actual user type from backend
+        navigate(routes[user.user_type] || '/customer');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
+      console.error(err);
+      setError(err.response?.data?.detail || 'Invalid email or password. Please try again.');
       setLoading(false);
     }
   };
@@ -107,22 +118,6 @@ const SignIn = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="userType">User Type</label>
-            <select
-              id="userType"
-              name="userType"
-              className="input"
-              value={formData.userType}
-              onChange={handleChange}
-            >
-              <option value="customer">Customer</option>
-              <option value="chef">Chef</option>
-              <option value="delivery">Delivery Staff</option>
-              <option value="manager">Manager</option>
-            </select>
-          </div>
-
           {error && (
             <div className="error-message" style={{ color: '#e74c3c', marginBottom: '15px', fontSize: '14px' }}>
               {error}
@@ -139,4 +134,3 @@ const SignIn = () => {
 };
 
 export default SignIn;
-

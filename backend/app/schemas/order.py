@@ -16,7 +16,7 @@ class CartItemCreate(BaseModel):
 class OrderCreate(BaseModel):
     """Schema for creating an order."""
     items: List[CartItemCreate]
-    delivery_address: str
+    delivery_address: Optional[str] = "Customer Address"  # Made optional for UI, default provided
     delivery_instructions: Optional[str] = None
 
 

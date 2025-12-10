@@ -9,18 +9,23 @@ import './CustomerDashboard.css';
 const CustomerDashboard = () => {
   const { user, isVIP } = useAuth();
   const { cart, getTotalPrice } = useCart();
-  const [walletBalance, setWalletBalance] = useState(user?.walletBalance || 0);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [walletLoading, setWalletLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [depositAmount, setDepositAmount] = useState('');
+  const [depositLoading, setDepositLoading] = useState(false);
 
   useEffect(() => {
     if (user && user.id) {
+      fetchWallet();
       fetchOrders();
-      setWalletBalance(user.walletBalance || 0);
       
       // Set up polling for real-time updates every 5 seconds
       const pollInterval = setInterval(() => {
         fetchOrders();
+        fetchWallet();
       }, 5000);
 
       return () => clearInterval(pollInterval);
@@ -29,15 +34,47 @@ const CustomerDashboard = () => {
     }
   }, [user]);
 
+  const fetchWallet = async () => {
+    if (!user || !user.id) {
+      setWalletLoading(false);
+      return;
+    }
+    
+    try {
+      setWalletLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_BASE_URL}/api/wallet`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const balance = response.data.balance || 0;
+      setWalletBalance(balance);
+    } catch (error) {
+      console.error('Failed to fetch wallet:', error);
+      // Set to 0 if error (user might not be a customer)
+      setWalletBalance(0);
+    } finally {
+      setWalletLoading(false);
+    }
+  };
+
   const fetchOrders = async () => {
     if (!user || !user.id) return;
     
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/orders/user/${user.id}`);
-      if (response.data.orders) {
+      const response = await axios.get(`${API_BASE_URL}/api/orders/`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      // The API returns a list of orders directly, not wrapped in an object
+      const ordersData = Array.isArray(response.data) ? response.data : (response.data.orders || []);
+      
+      if (ordersData) {
         // Sort orders by creation date (newest first)
-        const sortedOrders = response.data.orders.sort((a, b) => 
-          new Date(b.createdAt) - new Date(a.createdAt)
+        const sortedOrders = ordersData.sort((a, b) => 
+          new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt)
         );
         setOrders(sortedOrders);
       }
@@ -76,6 +113,49 @@ const CustomerDashboard = () => {
     return 'placed';
   };
 
+  const handleDeposit = async () => {
+    const amount = parseFloat(depositAmount);
+    
+    if (!amount || amount <= 0) {
+      alert('Please enter a valid amount greater than 0');
+      return;
+    }
+
+    setDepositLoading(true);
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `${API_BASE_URL}/api/wallet/deposit`,
+        {
+          amount: amount,
+          payment_method: 'credit_card'
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      if (response.data.success) {
+        // Update balance immediately
+        setWalletBalance(response.data.balance);
+        // Also refetch to ensure we have the latest data
+        await fetchWallet();
+        setDepositAmount('');
+        setShowDepositModal(false);
+        alert(`Successfully deposited $${amount.toFixed(2)}! Your new balance is $${response.data.balance.toFixed(2)}`);
+      }
+    } catch (error) {
+      console.error('Deposit failed:', error);
+      alert(error.response?.data?.detail || 'Deposit failed. Please try again.');
+    } finally {
+      setDepositLoading(false);
+    }
+  };
+
   return (
     <div className="customer-dashboard">
       <h1 className="dashboard-title">Customer Dashboard</h1>
@@ -83,11 +163,63 @@ const CustomerDashboard = () => {
       <div className="dashboard-grid">
         <div className="dashboard-card wallet-card">
           <h2>Wallet</h2>
-          <div className="wallet-balance">
-            <span className="balance-amount">${walletBalance.toFixed(2)}</span>
-            {isUserVIP && <span className="vip-badge">VIP</span>}
-          </div>
-          <button className="btn btn-success">Deposit Money</button>
+          {walletLoading ? (
+            <div className="wallet-balance">
+              <span className="balance-label">Loading balance...</span>
+            </div>
+          ) : (
+            <div className="wallet-balance">
+              <div className="balance-display">
+                <span className="balance-label">Current Balance:</span>
+                <span className="balance-amount">${walletBalance.toFixed(2)}</span>
+              </div>
+              {isUserVIP && <span className="vip-badge">VIP</span>}
+            </div>
+          )}
+          <button className="btn btn-success" onClick={() => setShowDepositModal(true)}>
+            Deposit Money
+          </button>
+          
+          {showDepositModal && (
+            <div className="modal-overlay" onClick={() => setShowDepositModal(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <h3>Deposit Money</h3>
+                <div className="form-group">
+                  <label htmlFor="depositAmount">Amount ($)</label>
+                  <input
+                    type="number"
+                    id="depositAmount"
+                    className="input"
+                    value={depositAmount}
+                    onChange={(e) => setDepositAmount(e.target.value)}
+                    placeholder="Enter amount"
+                    min="0.01"
+                    step="0.01"
+                    disabled={depositLoading}
+                  />
+                </div>
+                <div className="modal-actions">
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setShowDepositModal(false);
+                      setDepositAmount('');
+                    }}
+                    disabled={depositLoading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleDeposit}
+                    disabled={depositLoading}
+                  >
+                    {depositLoading ? 'Processing...' : 'Deposit'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="dashboard-card cart-card">
@@ -146,11 +278,11 @@ const CustomerDashboard = () => {
                       {order.status || 'Placed'}
                     </span>
                   </div>
-                  <p className="order-date">{formatDate(order.createdAt)}</p>
+                  <p className="order-date">{formatDate(order.created_at || order.createdAt)}</p>
                   <div className="order-items-preview">
                     {order.items && order.items.slice(0, 2).map((item, idx) => (
                       <span key={idx} className="order-item-name">
-                        {item.quantity}x {item.name}
+                        {item.quantity}x {item.dish_name || item.name}
                       </span>
                     ))}
                     {order.items && order.items.length > 2 && (
@@ -158,10 +290,10 @@ const CustomerDashboard = () => {
                     )}
                   </div>
                   <div className="order-total-row">
-                    {order.discount > 0 && (
-                      <span className="order-discount">Discount: -${order.discount.toFixed(2)}</span>
+                    {order.discount_amount > 0 && (
+                      <span className="order-discount">Discount: -${order.discount_amount.toFixed(2)}</span>
                     )}
-                    <p className="order-total">Total: ${order.total?.toFixed(2) || '0.00'}</p>
+                    <p className="order-total">Total: ${order.total_amount?.toFixed(2) || '0.00'}</p>
                   </div>
                   <Link 
                     to={`/orders/${order.id}`} 

@@ -1,4 +1,4 @@
-# AI-Slice 🍕🤖
+# AI-Slice
 
 **AI-Enabled Online Restaurant Order & Delivery System**
 
@@ -6,7 +6,7 @@ A sophisticated restaurant management platform that combines traditional online 
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Key Features](#key-features)
@@ -26,7 +26,7 @@ A sophisticated restaurant management platform that combines traditional online 
 
 ---
 
-## 🎯 Overview
+## Overview
 
 AI-Slice is an intelligent restaurant order and delivery system that uses AI (Large Language Models) to provide instant customer support, implements a competitive bidding system for deliveries, and maintains a comprehensive reputation system to ensure quality service.
 
@@ -41,31 +41,31 @@ AI-Slice is an intelligent restaurant order and delivery system that uses AI (La
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🤖 AI-Powered Support
+### AI-Powered Support
 - **Dual-Mode System**: Queries local knowledge base first, falls back to external LLM
 - **Smart Q&A**: Answers questions about menu, restaurant, and policies
 - **Quality Tracking**: Users rate answers; poor ratings flag content for manager review
 - **Menu Recommendations**: Personalized suggestions based on order history
 
-### 🍽️ Restaurant Operations
+### Restaurant Operations
 - **Independent Chef Management**: Chefs autonomously create and manage dishes
 - **Chef Specials**: VIP-exclusive dishes
 - **Popularity Tracking**: Real-time dish orders and ratings
 
-### 🚚 Delivery System
+### Delivery System
 - **Competitive Bidding**: Delivery personnel bid on orders
 - **Auto-Assignment**: System automatically assigns to lowest bidder
 - **Manager Override**: Managers can override with required justification
 
-### 💰 Financial Management
+### Financial Management
 - **Wallet System**: Pre-paid accounts for all customers
 - **Automatic Validation**: Orders exceeding balance auto-rejected
 - **VIP Discounts**: Automatic 5% discount
 - **Free Deliveries**: 1 free delivery per 3 VIP orders
 
-### 🏆 Reputation System
+### Reputation System
 - **Comprehensive Tracking**: Monitors complaints, compliments, warnings
 - **VIP Qualification**: Automatic promotion (>$100 spent OR 3+ orders)
 - **Weighted Feedback**: VIP complaints/compliments count double
@@ -73,7 +73,7 @@ AI-Slice is an intelligent restaurant order and delivery system that uses AI (La
 
 ---
 
-## 🚀 Quick Start (5 Minutes)
+## Quick Start (5 Minutes)
 
 ### Prerequisites
 - Python 3.9+
@@ -110,7 +110,11 @@ EOF
 # 6. Initialize database
 python -c "from app.core.database import init_db; init_db()"
 
-# 7. Run the application
+# 7. (Optional) Seed test data
+python seed_users.py  # Creates test users
+python seed_menu.py    # Creates sample menu items
+
+# 8. Run the application
 python run.py
 ```
 
@@ -121,7 +125,24 @@ python run.py
 
 **That's it!** You now have a running AI-Slice server.
 
-### 📮 Testing with Postman
+### Mock User Credentials
+
+To quickly test the application, run the seed scripts in the backend directory:
+
+1. **Seed Users**: Run `python seed_users.py` to create test users for all roles
+2. **Seed Menu**: Run `python seed_menu.py` to populate the database with sample dishes
+
+**Test Users** (Password for all: `password123`):
+
+| Role         | Username   | Email               | Notes                                      |
+|--------------|------------|---------------------|--------------------------------------------|
+| **Customer** | `customer` | `customer@test.com` | Standard customer with wallet balance      |
+| **VIP**      | `vip`      | `vip@test.com`      | VIP status, 5% discount, free deliveries   |
+| **Chef**     | `chef`     | `chef@test.com`     | Can manage menu items                      |
+| **Delivery** | `delivery` | `delivery@test.com` | Can view and bid on deliveries             |
+| **Manager**  | `manager`  | `manager@test.com`  | Admin access, approvals, etc.              |
+
+### Testing with Postman
 
 **Import the collection:**
 1. Open Postman
@@ -133,7 +154,7 @@ The collection includes auto-token management - just login and the JWT is saved 
 
 ---
 
-## 👤 User Types & Capabilities
+## User Types & Capabilities
 
 ### 1. Visitors
 - Browse menus and restaurant information
@@ -188,7 +209,7 @@ The collection includes auto-token management - just login and the JWT is saved 
 - Review AI responses
 - Manage knowledge base
 
-**🔐 Manager Creation**:
+**Manager Creation**:
 
 Managers must be created using a special bootstrap endpoint with a secret code:
 
@@ -203,9 +224,9 @@ POST /api/manager/create-manager
 }
 ```
 
-**⚠️ Security Note**: The secret code (`create-manager-2025`) should be changed in production and stored securely.
+**Security Note**: The secret code (`create-manager-2025`) should be changed in production and stored securely.
 
-**📋 Customer Approval Workflow**:
+**Customer Approval Workflow**:
 
 1. **New users register** → Status: `PENDING`
 2. **Manager reviews** → `GET /api/manager/pending-registrations`
@@ -219,7 +240,7 @@ POST /api/manager/activate-all-users
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Backend
 - **Framework**: FastAPI 0.104+
@@ -241,7 +262,7 @@ POST /api/manager/activate-all-users
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 AI-Slice/
@@ -295,7 +316,7 @@ AI-Slice/
 
 ---
 
-## 🔧 Detailed Installation
+## Detailed Installation
 
 ### Option 1: SQLite (Development - Simplest)
 
@@ -374,7 +395,7 @@ OPENAI_API_KEY=sk-your-api-key-here
 
 ---
 
-## ⚙️ Configuration Guide
+## Configuration Guide
 
 Create `.env` file in `backend/` directory:
 
@@ -423,7 +444,7 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 
 ---
 
-## 🎮 Running the Application
+## Running the Application
 
 ### Development Mode
 
@@ -473,7 +494,7 @@ sudo systemctl start aislice
 
 ---
 
-## 🔧 Core Services
+## Core Services
 
 ### OrderService (`order_service.py`)
 
@@ -542,7 +563,7 @@ Tracks and manages user reputation.
 
 ---
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### Core Tables
 
@@ -578,15 +599,15 @@ Tracks and manages user reputation.
 
 ---
 
-## 📚 API Documentation
+## API Documentation
 
-### 📮 Postman Collection
+### Postman Collection
 
 Import `AI-Slice.postman_collection.json` into Postman for:
-- ✅ 42 pre-configured API requests
-- ✅ Auto-token management (JWT saved after login)
-- ✅ Sample request bodies
-- ✅ Organized into 7 categories
+- Pre-configured API requests
+- Auto-token management (JWT saved after login)
+- Sample request bodies
+- Organized into 7 categories
 
 ### Key Endpoints
 
@@ -619,7 +640,7 @@ Import `AI-Slice.postman_collection.json` into Postman for:
 
 ---
 
-## 👨‍💻 Development Guide
+## Development Guide
 
 ### Code Style
 
@@ -673,7 +694,7 @@ alembic downgrade -1
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Port Already in Use
 
@@ -734,14 +755,14 @@ python -c "from app.core.database import Base, engine; Base.metadata.drop_all(en
 
 ---
 
-## 🔜 Next Steps
+## Next Steps
 
 ### Immediate Priorities
 
 1. **API Endpoints** - Implement routes in `app/api/`
 2. **Authentication** - JWT token generation/validation
 3. **Testing** - Unit and integration tests
-4. **Seed Data** - Sample data for testing
+4. **Seed Data** - Sample data for testing (✅ Available: `seed_users.py` and `seed_menu.py`)
 
 ### Short Term
 
@@ -761,28 +782,28 @@ python -c "from app.core.database import Base, engine; Base.metadata.drop_all(en
 
 ---
 
-## 📊 Project Status
+## Project Status
 
-**✅ Completed**:
+**Completed**:
 - Backend structure
 - 5 core services (Order, Payment, Delivery, AI, Reputation)
 - 15+ database models
 - Configuration system
 - Documentation
 
-**🚧 In Progress**:
+**In Progress**:
 - API endpoints
 - Authentication
 - Testing suite
 
-**📋 Planned**:
+**Planned**:
 - Frontend interface
 - Real-time features
 - Mobile apps
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create feature branch (`git checkout -b feature/amazing-feature`)
@@ -792,13 +813,13 @@ python -c "from app.core.database import Base, engine; Base.metadata.drop_all(en
 
 ---
 
-## 📄 License
+## License
 
 MIT License - See LICENSE file for details
 
 ---
 
-## 👥 Team
+## Team
 
 **Course**: Software Engineering  
 **Semester**: Fall 2025
@@ -807,7 +828,7 @@ MIT License - See LICENSE file for details
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - FastAPI framework
 - Ollama for local LLM

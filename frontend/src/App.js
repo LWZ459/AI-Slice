@@ -70,6 +70,15 @@ function App() {
                     </ProtectedRoute>
                   } 
                 />
+                {/* Fallback dashboard for VIP users who share the customer dashboard but have extra perks */}
+                <Route 
+                  path="/vip" 
+                  element={
+                    <ProtectedRoute requiredUserType="vip">
+                      <CustomerDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
                 <Route 
                   path="/orders/:orderId" 
                   element={
@@ -105,9 +114,7 @@ function App() {
                 <Route 
                   path="/checkout" 
                   element={
-                    <ProtectedRoute>
-                      <Checkout />
-                    </ProtectedRoute>
+                    <Checkout />
                   } 
                 />
                 <Route 

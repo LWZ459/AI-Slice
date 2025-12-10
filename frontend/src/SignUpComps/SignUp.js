@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import './SignUp.css';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
     userType: 'customer',
     phone: ''
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,20 +24,33 @@ const SignUp = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    // TODO: Implement registration
-    // Redirect based on user type
-    const routes = {
-      customer: '/customer',
-      chef: '/chef',
-      delivery: '/delivery'
-    };
-    navigate(routes[formData.userType] || '/customer');
+
+    setLoading(true);
+
+    try {
+      await axios.post(`${API_BASE_URL}/api/auth/register`, {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.name,
+        phone: formData.phone,
+        user_type: formData.userType
+      });
+      
+      alert('Registration successful! Please wait for manager approval before logging in.');
+      navigate('/signin');
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.detail || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,6 +68,20 @@ const SignUp = () => {
               value={formData.name}
               onChange={handleChange}
               required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              className="input"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              minLength={3}
             />
           </div>
 
@@ -105,6 +136,7 @@ const SignUp = () => {
               value={formData.password}
               onChange={handleChange}
               required
+              minLength={8}
             />
           </div>
 
@@ -121,7 +153,9 @@ const SignUp = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary">Sign Up</button>
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading ? 'Creating Account...' : 'Sign Up'}
+          </button>
         </form>
       </div>
     </div>
@@ -129,4 +163,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
