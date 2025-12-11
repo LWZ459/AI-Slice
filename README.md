@@ -95,6 +95,18 @@ source venv/bin/activate
 # On Windows:
 venv\Scripts\activate
 
+3.5 install ollama
+# on macOS:
+brew install ollama
+ollama --version
+ollama pull 3.1llama
+ollama serve
+#On windows/Linux
+winget install Ollama.Ollama
+ollama --version
+ollama pull llama3.1
+net start ollama
+
 # 4. Install dependencies
 cd backend
 pip install -r requirements.txt
