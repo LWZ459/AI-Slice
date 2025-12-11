@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const isVIP = () => {
-    return user && (user.isVIP === true || user.user_type === 'vip');
+    return user && (user.isVIP === true || user.is_vip === true || user.user_type === 'vip');
   };
 
   return (

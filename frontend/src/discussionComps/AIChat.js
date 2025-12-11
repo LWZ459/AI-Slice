@@ -51,7 +51,6 @@ const AIChat = () => {
       };
       setMessages(prev => [...prev, aiResponse]);
     } catch (error) {
-      console.error('Error asking AI:', error);
       const errorResponse = {
         id: messages.length + 2,
         text: "I'm sorry, I'm having trouble connecting to the server right now. Please try again later.",
@@ -78,10 +77,13 @@ const AIChat = () => {
         msg.id === messageId ? { ...msg, rating } : msg
       )
     );
-    console.log(`Rated message ${messageId} with ${rating} stars`);
     } catch (error) {
-      console.error('Error rating answer:', error);
-      alert('Failed to submit rating. Please try again.');
+      // Show error as a system message
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        text: "Failed to submit rating. Please check your connection and try again.",
+        sender: 'ai'
+      }]);
     }
   };
 

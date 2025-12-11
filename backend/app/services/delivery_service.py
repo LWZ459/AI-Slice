@@ -265,6 +265,9 @@ class DeliveryService:
                 order.status = OrderStatus.IN_TRANSIT
             elif new_status == DeliveryStatus.DELIVERED:
                 order.status = OrderStatus.DELIVERED
+                # Also set order as completed for now, or require a separate step?
+                # Let's mark it as delivered first. Rating can happen after.
+                order.completed_at = datetime.utcnow()
         
         self.db.commit()
         

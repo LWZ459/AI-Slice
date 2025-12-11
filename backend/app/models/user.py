@@ -56,6 +56,12 @@ class User(Base):
     reputation = relationship("Reputation", back_populates="user", uselist=False)
     chat_logs = relationship("ChatLog", back_populates="user")
     
+    # Type specific relationships
+    customer = relationship("Customer", back_populates="user", uselist=False)
+    chef = relationship("Chef", back_populates="user", uselist=False)
+    delivery_person = relationship("DeliveryPerson", back_populates="user", uselist=False)
+    manager = relationship("Manager", back_populates="user", uselist=False)
+    
     def __repr__(self):
         return f"<User {self.username} ({self.user_type.value})>"
 
@@ -91,7 +97,7 @@ class Customer(Base):
     vip_since = Column(DateTime(timezone=True), nullable=True)
     vip_orders_count = Column(Integer, default=0)  # For tracking free delivery
     
-    user = relationship("User", foreign_keys=[user_id])
+    user = relationship("User", back_populates="customer")
     orders = relationship("Order", back_populates="customer")
 
 
@@ -130,7 +136,7 @@ class Chef(Base):
     
     salary = Column(Float, default=0.0)
     
-    user = relationship("User", foreign_keys=[user_id])
+    user = relationship("User", back_populates="chef")
     dishes = relationship("Dish", back_populates="chef")
 
 
@@ -153,7 +159,7 @@ class DeliveryPerson(Base):
     
     is_available = Column(Boolean, default=True)
     
-    user = relationship("User", foreign_keys=[user_id])
+    user = relationship("User", back_populates="delivery_person")
     bids = relationship("DeliveryBid", back_populates="delivery_person")
     deliveries = relationship("Delivery", back_populates="delivery_person")
 
@@ -168,5 +174,5 @@ class Manager(Base):
     department = Column(String)
     access_level = Column(Integer, default=1)
     
-    user = relationship("User", foreign_keys=[user_id])
+    user = relationship("User", back_populates="manager")
 
