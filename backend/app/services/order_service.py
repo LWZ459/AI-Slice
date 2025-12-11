@@ -61,6 +61,9 @@ class OrderService:
             # If dish missing OR dish unavailable → Mark unavailable
             if not dish or not dish.is_available:
                 unavailable_items.append(dish_id)
+            # If dish is VIP-only and customer is not VIP → Reject
+            elif dish.is_special and not customer.is_vip:
+                return False, f"'{dish.name}' is a VIP-only item. Become a VIP to order this dish!", None
             else:
                 available_items.append({
                     'dish': dish,

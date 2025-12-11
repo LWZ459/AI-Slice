@@ -276,10 +276,12 @@ class DeliveryService:
         return True, "Delivery status updated"
     
     def get_available_deliveries(self) -> List[Delivery]:
-        """Get deliveries available for bidding."""
+        """Get deliveries available for bidding or assignment."""
         return self.db.query(Delivery).filter(
-            Delivery.status == DeliveryStatus.PENDING_BIDDING,
-            Delivery.bidding_ends_at > datetime.utcnow()
+            Delivery.status.in_([
+                DeliveryStatus.PENDING_BIDDING,
+                DeliveryStatus.NO_BIDDERS  # Also show deliveries needing assignment
+            ])
         ).all()
     
     def get_delivery_bids(self, delivery_id: int) -> List[DeliveryBid]:
