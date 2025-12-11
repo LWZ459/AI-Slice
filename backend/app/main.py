@@ -6,6 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .core.database import init_db
+from api.voice import router as voice_router
+
+# Add to router includes
+app.include_router(voice_router, prefix="/api/voice", tags=["voice"])
 
 # Create FastAPI app
 app = FastAPI(
