@@ -74,7 +74,8 @@ async def register(
         full_name=request.full_name,
         phone=request.phone,
         user_type=user_type_map[request.user_type],
-        status=UserStatus.PENDING  # Requires manager approval
+        # Only customers are active immediately. Staff roles require approval.
+        status=UserStatus.ACTIVE if user_type_map[request.user_type] == UserType.CUSTOMER else UserStatus.PENDING
     )
     
     db.add(user)

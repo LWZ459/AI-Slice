@@ -1,20 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { useCart } from '../contexts/CartContext';
+import API_BASE_URL from '../config/api';
 import './HomePage.css';
 
 const HomePage = () => {
   const { addToCart } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const [quantities, setQuantities] = useState({});
-  const [dishes] = useState([
+  const [dishes, setDishes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fallback mock data if API fails
+  const MOCK_DISHES = [
     { id: 1, name: 'Margherita Pizza', chef: 'Chef Mario', price: 12.99, rating: 4.8, available: true, description: 'Classic Italian pizza with fresh tomatoes, mozzarella cheese, and basil leaves on a thin crust.' },
     { id: 2, name: 'Pepperoni Pizza', chef: 'Chef Mario', price: 14.99, rating: 4.9, available: true, description: 'Traditional pepperoni pizza with spicy pepperoni slices and melted mozzarella cheese.' },
     { id: 3, name: 'Caesar Salad', chef: 'Chef Alice', price: 8.99, rating: 4.6, available: true, description: 'Fresh romaine lettuce with Caesar dressing, parmesan cheese, and croutons.' },
     { id: 4, name: 'Pasta Carbonara', chef: 'Chef Luigi', price: 13.99, rating: 4.7, available: true, description: 'Creamy pasta dish with bacon, eggs, parmesan cheese, and black pepper.' },
     { id: 5, name: 'Chicken Burger', chef: 'Chef Alice', price: 11.99, rating: 4.5, available: true, description: 'Juicy grilled chicken patty with lettuce, tomato, and special sauce on a toasted bun.' },
     { id: 6, name: 'Chocolate Cake', chef: 'Chef Luigi', price: 7.99, rating: 4.9, available: true, description: 'Rich and moist chocolate cake with chocolate frosting, perfect for dessert lovers.' }
-  ]);
+  ];
+
+  useEffect(() => {
+    fetchDishes();
+  }, []);
+
+  const fetchDishes = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/menu/`);
+      const apiDishes = response.data.map(d => ({
+        ...d,
+        rating: d.average_rating,
+        available: d.is_available
+      }));
+      setDishes(apiDishes);
+      setLoading(false);
+    } catch (err) {
+      setDishes(MOCK_DISHES);
+      setLoading(false);
+    }
+  };
 
   const filteredDishes = dishes.filter(dish =>
     dish.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -80,7 +106,13 @@ const HomePage = () => {
                 key={dish.id} 
                 className={`dish-card ${isWide ? 'dish-card-wide' : ''}`}
               >
-                <div className={`dish-image pattern-${(index % 3) + 1}`}></div>
+                {dish.image_url ? (
+                  <div className="dish-image-container">
+                    <img src={dish.image_url} alt={dish.name} className="dish-image-img" />
+                  </div>
+                ) : (
+                  <div className={`dish-image pattern-${(index % 3) + 1}`}></div>
+                )}
                 <div className="dish-content">
                   <div className="dish-header">
                     <h3 className="dish-name">{dish.name}</h3>

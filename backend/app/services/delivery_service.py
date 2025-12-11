@@ -68,17 +68,19 @@ class DeliveryService:
         
         # Check if there is a manager override
         if manager_override_delivery_person_id is not None:
-            if not justification:
-                return False, "Manager override requires justification", None
-            
-            chosen_delivery_person_id = manager_override_delivery_person_id
-            assignment_type = AssignmentType.MANAGER_OVERRIDE
-            
-            # Find the override bid
+            # Check if override is not the lowest bid
             override_bid = next(
                 (b for b in bids if b.delivery_person_id == manager_override_delivery_person_id),
                 None
             )
+            
+            if override_bid and override_bid.bid_amount > lowest_bid.bid_amount:
+                if not justification:
+                    return False, "Choosing a higher bid requires a justification memo", None
+            
+            chosen_delivery_person_id = manager_override_delivery_person_id
+            assignment_type = AssignmentType.MANAGER_OVERRIDE
+            
             if not override_bid:
                 return False, "Manager override delivery person has no bid", None
             

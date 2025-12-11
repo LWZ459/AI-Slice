@@ -89,6 +89,9 @@ class OrderItem(Base):
     
     special_instructions = Column(Text)
     
+    # Individual dish rating
+    rating = Column(Float, nullable=True)
+    
     # Relationships
     order = relationship("Order", back_populates="items")
     dish = relationship("Dish", back_populates="order_items")

@@ -260,7 +260,8 @@ async def rate_order(
     success, message = order_service.rate_order(
         order_id=order_id,
         food_rating=rating.food_rating,
-        delivery_rating=rating.delivery_rating
+        delivery_rating=rating.delivery_rating,
+        item_ratings=rating.items
     )
     
     if not success:

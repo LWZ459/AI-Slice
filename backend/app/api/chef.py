@@ -160,3 +160,32 @@ async def update_order_status(
             
     return {"success": True, "message": message}
 
+
+@router.get("/stats", response_model=dict)
+async def get_chef_stats(
+    current_user: User = Depends(require_user_type(UserType.CHEF)),
+    db: Session = Depends(get_db)
+):
+    """
+    Get statistics for the current chef.
+    """
+    chef = current_user.chef
+    if not chef:
+        raise HTTPException(status_code=404, detail="Chef profile not found")
+        
+    # Active orders (placed or preparing)
+    active_orders_count = db.query(Order).filter(
+        Order.status.in_([OrderStatus.PLACED, OrderStatus.PREPARING])
+    ).count()
+    
+    # Total dishes - count actual Dish records
+    from ..models.menu import Dish
+    total_dishes = db.query(Dish).filter(Dish.chef_id == chef.id).count()
+    
+    return {
+        "active_orders": active_orders_count,
+        "total_dishes": total_dishes,
+        "total_completed": chef.total_orders_completed,
+        "average_rating": chef.average_rating
+    }
+

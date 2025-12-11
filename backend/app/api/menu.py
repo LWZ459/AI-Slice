@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from ..core.database import get_db
-from ..core.security import get_current_active_user, require_user_type
+from ..core.security import get_current_active_user, require_user_type, get_optional_current_user
 from ..models.user import User, UserType, Chef, Customer
 from ..models.menu import Dish, DishCategory
 from ..schemas.menu import (
@@ -29,6 +29,7 @@ async def browse_menu(
     min_price: Optional[float] = Query(None),
     max_price: Optional[float] = Query(None),
     include_special: bool = Query(False),
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -63,9 +64,17 @@ async def browse_menu(
     
     # Filter special dishes (VIP only)
     if not include_special:
-        query = query.filter(Dish.is_special == False)
+        # Check user status
+        is_vip = False
+        if hasattr(current_user, 'user_type') and current_user.user_type in [UserType.VIP, UserType.MANAGER, UserType.CHEF]:
+             is_vip = True
+        elif hasattr(current_user, 'customer') and current_user.customer and current_user.customer.is_vip:
+             is_vip = True
+             
+        if not is_vip:
+            query = query.filter(Dish.is_special == False)
     
-    dishes = query.order_by(Dish.times_ordered.desc()).offset(skip).limit(limit).all()
+    dishes = query.order_by(Dish.average_rating.desc(), Dish.times_ordered.desc()).offset(skip).limit(limit).all()
     
     return dishes
 

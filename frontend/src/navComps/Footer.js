@@ -22,16 +22,6 @@ const Footer = () => {
         </div>
         
         <div className="footer-section">
-          <h4>User Types</h4>
-          <ul>
-            <li><Link to="/customer">Customer</Link></li>
-            <li><Link to="/chef">Chef</Link></li>
-            <li><Link to="/delivery">Delivery</Link></li>
-            <li><Link to="/manager">Manager</Link></li>
-          </ul>
-        </div>
-        
-        <div className="footer-section">
           <h4>Contact</h4>
           <p>Email: support@aislice.com</p>
           <p>Phone: (555) 123-4567</p>
