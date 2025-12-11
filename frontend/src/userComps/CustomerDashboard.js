@@ -18,11 +18,14 @@ const CustomerDashboard = () => {
   const [depositLoading, setDepositLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [myComplaints, setMyComplaints] = useState([]);
+  const [myCompliments, setMyCompliments] = useState([]);
 
   useEffect(() => {
     if (user && user.id) {
       fetchWallet();
       fetchOrders();
+      fetchFeedback();
       
       // Set up polling for real-time updates every 5 seconds
       const pollInterval = setInterval(() => {
@@ -83,6 +86,26 @@ const CustomerDashboard = () => {
       // Silently fail
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFeedback = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const [complaintsRes, complimentsRes] = await Promise.all([
+        axios.get(`${API_BASE_URL}/api/reputation/complaints`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${API_BASE_URL}/api/reputation/compliments`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+      // Filter to only show complaints I filed
+      setMyComplaints(complaintsRes.data.filter(c => c.is_mine));
+      // Filter to only show compliments I gave
+      setMyCompliments(complimentsRes.data.filter(c => c.is_mine));
+    } catch (error) {
+      // Silently fail
     }
   };
 
@@ -347,12 +370,50 @@ const CustomerDashboard = () => {
           </div>
         </div>
 
-        <div className="dashboard-card">
-          <h2>Complaints</h2>
-          <p>Have an issue?</p>
-          <div className="quick-actions">
+        <div className="dashboard-card feedback-card">
+          <h2>My Feedback</h2>
+          <div className="quick-actions" style={{marginBottom: '15px'}}>
+             <Link to="/compliment" className="btn btn-success" style={{marginRight: '10px'}}>Give Compliment</Link>
              <Link to="/complaint" className="btn btn-danger">File Complaint</Link>
           </div>
+          
+          {/* Complaints I Filed */}
+          {myComplaints.length > 0 && (
+            <div className="feedback-section">
+              <h3>📝 Complaints I Filed</h3>
+              {myComplaints.map(c => (
+                <div key={c.id} className={`feedback-item complaint-${c.status}`}>
+                  <div className="feedback-header">
+                    <strong>{c.title}</strong>
+                    <span className={`status-badge ${c.status}`}>{c.status}</span>
+                  </div>
+                  <p className="feedback-target">Against: {c.subject}</p>
+                  {c.manager_decision && (
+                    <p className="resolution-note">
+                      <strong>Resolution:</strong> {c.manager_decision}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Compliments I Gave */}
+          {myCompliments.length > 0 && (
+            <div className="feedback-section">
+              <h3>🌟 Compliments I Gave</h3>
+              {myCompliments.map(c => (
+                <div key={c.id} className="feedback-item compliment">
+                  <strong>{c.title}</strong>
+                  <p className="feedback-target">To: {c.receiver}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {myComplaints.length === 0 && myCompliments.length === 0 && (
+            <p style={{color: '#7f8c8d', textAlign: 'center', marginTop: '10px'}}>No feedback submitted yet</p>
+          )}
         </div>
 
         <div className="dashboard-card">

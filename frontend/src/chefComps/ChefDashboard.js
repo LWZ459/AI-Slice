@@ -16,6 +16,10 @@ const ChefDashboard = () => {
   });
   const [actionMessage, setActionMessage] = useState('');
   
+  // Feedback State
+  const [complaintsAgainstMe, setComplaintsAgainstMe] = useState([]);
+  const [complimentsReceived, setComplimentsReceived] = useState([]);
+  
   // Menu Management State
   const [categories, setCategories] = useState([]);
   const [showDishModal, setShowDishModal] = useState(false);
@@ -35,6 +39,7 @@ const ChefDashboard = () => {
     fetchOrders();
     fetchCategories();
     fetchStats();
+    fetchFeedback();
 
     // Poll for new orders every 10 seconds
     const interval = setInterval(() => {
@@ -56,18 +61,33 @@ const ChefDashboard = () => {
     }
   };
 
+  const fetchFeedback = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const [complaintsRes, complimentsRes] = await Promise.all([
+        axios.get(`${API_BASE_URL}/api/reputation/complaints`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${API_BASE_URL}/api/reputation/compliments`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+      // Filter complaints against me (not filed by me)
+      setComplaintsAgainstMe(complaintsRes.data.filter(c => !c.is_mine));
+      // Filter compliments I received (not given by me)
+      setComplimentsReceived(complimentsRes.data.filter(c => !c.is_mine));
+    } catch (error) {
+      // Silently fail
+    }
+  };
+
   const fetchMenu = async () => {
     try {
-      // Need to filter for *my* dishes ideally, but currently GET /api/menu/ returns all available.
-      // However, the Chef dashboard usually implies managing *their* dishes. 
-      // The backend GET /api/menu/ supports chef_id filter.
-      // For now, we'll fetch all and maybe the backend filters or we see all.
-      // A better approach if the API supports it is fetching "my dishes".
-      // Let's assume fetching all is fine for now, or we can filter client side if we knew our ID.
-      // Actually, standard practice: chefs manage their own menu. 
-      // Let's fetch with ?chef_id=ME if possible, but we don't have our ID easily.
-      // Let's just fetch all.
-      const response = await axios.get(`${API_BASE_URL}/api/menu/`);
+      // Fetch all dishes including VIP specials (chefs need to manage all their dishes)
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_BASE_URL}/api/menu/?include_special=true`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
       setDishes(response.data);
       setLoading(false);
     } catch (error) {
@@ -345,6 +365,49 @@ const ChefDashboard = () => {
               <div className="stat-label">Avg Rating</div>
             </div>
           </div>
+        </div>
+
+        {/* Feedback Section */}
+        <div className="dashboard-card feedback-card">
+          <h2>My Feedback</h2>
+          
+          {/* Compliments Received */}
+          {complimentsReceived.length > 0 && (
+            <div className="feedback-section">
+              <h3>🌟 Compliments Received ({complimentsReceived.length})</h3>
+              {complimentsReceived.map(c => (
+                <div key={c.id} className="feedback-item compliment">
+                  <strong>{c.title}</strong>
+                  {c.description && <p>"{c.description}"</p>}
+                  <small>From: {c.giver}</small>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Complaints Against Me */}
+          {complaintsAgainstMe.length > 0 && (
+            <div className="feedback-section">
+              <h3>⚠️ Complaints ({complaintsAgainstMe.length})</h3>
+              {complaintsAgainstMe.map(c => (
+                <div key={c.id} className={`feedback-item complaint-${c.status}`}>
+                  <div className="feedback-header">
+                    <strong>{c.title}</strong>
+                    <span className={`status-badge ${c.status}`}>{c.status}</span>
+                  </div>
+                  <p>{c.description}</p>
+                  {c.manager_decision && (
+                    <p className="resolution-note"><strong>Resolution:</strong> {c.manager_decision}</p>
+                  )}
+                  <small>From: {c.complainant}</small>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {complimentsReceived.length === 0 && complaintsAgainstMe.length === 0 && (
+            <p className="empty-state">No feedback yet. Keep cooking great dishes!</p>
+          )}
         </div>
       </div>
 

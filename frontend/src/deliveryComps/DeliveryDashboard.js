@@ -8,9 +8,12 @@ const DeliveryDashboard = () => {
   const [availableDeliveries, setAvailableDeliveries] = useState([]);
   const [myDeliveries, setMyDeliveries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [complaintsAgainstMe, setComplaintsAgainstMe] = useState([]);
+  const [complimentsReceived, setComplimentsReceived] = useState([]);
 
   useEffect(() => {
     fetchData();
+    fetchFeedback();
     const interval = setInterval(fetchData, 10000); // Refresh every 10s
     return () => clearInterval(interval);
   }, []);
@@ -31,6 +34,26 @@ const DeliveryDashboard = () => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
+    }
+  };
+
+  const fetchFeedback = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const [complaintsRes, complimentsRes] = await Promise.all([
+        axios.get(`${API_BASE_URL}/api/reputation/complaints`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${API_BASE_URL}/api/reputation/compliments`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+      // Filter complaints against me (not filed by me)
+      setComplaintsAgainstMe(complaintsRes.data.filter(c => !c.is_mine));
+      // Filter compliments I received (not given by me)
+      setComplimentsReceived(complimentsRes.data.filter(c => !c.is_mine));
+    } catch (error) {
+      // Silently fail
     }
   };
 
@@ -123,6 +146,49 @@ const DeliveryDashboard = () => {
                 );
               })}
             </div>
+          )}
+        </div>
+
+        {/* Feedback Section */}
+        <div className="dashboard-card feedback-card">
+          <h2>My Feedback</h2>
+          
+          {/* Compliments Received */}
+          {complimentsReceived.length > 0 && (
+            <div className="feedback-section">
+              <h3>🌟 Compliments Received ({complimentsReceived.length})</h3>
+              {complimentsReceived.map(c => (
+                <div key={c.id} className="feedback-item compliment">
+                  <strong>{c.title}</strong>
+                  {c.description && <p>"{c.description}"</p>}
+                  <small>From: {c.giver}</small>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Complaints Against Me */}
+          {complaintsAgainstMe.length > 0 && (
+            <div className="feedback-section">
+              <h3>⚠️ Complaints ({complaintsAgainstMe.length})</h3>
+              {complaintsAgainstMe.map(c => (
+                <div key={c.id} className={`feedback-item complaint-${c.status}`}>
+                  <div className="feedback-header">
+                    <strong>{c.title}</strong>
+                    <span className={`status-badge ${c.status}`}>{c.status}</span>
+                  </div>
+                  <p>{c.description}</p>
+                  {c.manager_decision && (
+                    <p className="resolution-note"><strong>Resolution:</strong> {c.manager_decision}</p>
+                  )}
+                  <small>From: {c.complainant}</small>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {complimentsReceived.length === 0 && complaintsAgainstMe.length === 0 && (
+            <p className="empty-state">No feedback yet. Keep delivering with a smile!</p>
           )}
         </div>
       </div>

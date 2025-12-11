@@ -8,7 +8,7 @@ from typing import List
 from ..core.database import get_db
 from ..core.security import get_current_active_user, require_user_type
 from ..models.user import User, UserType
-from ..models.reputation import Complaint, ComplaintStatus
+from ..models.reputation import Complaint, ComplaintStatus, Compliment
 from ..schemas.reputation import (
     ComplaintCreate, ComplaintResponse, ComplaintDispute,
     ComplimentCreate, ComplimentResponse,
@@ -129,7 +129,51 @@ async def give_compliment(
     }
 
 
-@router.get("/complaints", response_model=List[ComplaintResponse])
+@router.get("/compliments", response_model=List[dict])
+async def list_compliments(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    List compliments.
+    
+    - Users: See compliments they gave or received
+    - Managers: See all compliments
+    """
+    query = db.query(Compliment)
+    
+    # Filter based on user type
+    if current_user.user_type != UserType.MANAGER:
+        query = query.filter(
+            (Compliment.giver_id == current_user.id) |
+            (Compliment.receiver_id == current_user.id)
+        )
+    
+    compliments = query.order_by(Compliment.created_at.desc()).offset(skip).limit(limit).all()
+    
+    # Format response with user names
+    result = []
+    for c in compliments:
+        giver = db.query(User).filter(User.id == c.giver_id).first()
+        receiver = db.query(User).filter(User.id == c.receiver_id).first()
+        result.append({
+            "id": c.id,
+            "giver_id": c.giver_id,
+            "giver": giver.full_name or giver.username if giver else "Unknown",
+            "receiver_id": c.receiver_id,
+            "receiver": receiver.full_name or receiver.username if receiver else "Unknown",
+            "title": c.title,
+            "description": c.description,
+            "created_at": c.created_at.isoformat(),
+            "is_mine": c.giver_id == current_user.id  # True if I gave it
+        })
+    
+    return result
+
+
+@router.get("/complaints", response_model=List[dict])
 async def list_complaints(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
@@ -163,7 +207,28 @@ async def list_complaints(
     
     complaints = query.order_by(Complaint.created_at.desc()).offset(skip).limit(limit).all()
     
-    return complaints
+    # Format response with user names
+    result = []
+    for c in complaints:
+        complainant = db.query(User).filter(User.id == c.complainant_id).first()
+        subject = db.query(User).filter(User.id == c.subject_id).first()
+        result.append({
+            "id": c.id,
+            "complainant_id": c.complainant_id,
+            "complainant": complainant.full_name or complainant.username if complainant else "Unknown",
+            "subject_id": c.subject_id,
+            "subject": subject.full_name or subject.username if subject else "Unknown",
+            "title": c.title,
+            "description": c.description,
+            "status": c.status.value,
+            "is_disputed": c.is_disputed,
+            "dispute_reason": c.dispute_reason,
+            "manager_decision": c.manager_decision,
+            "created_at": c.created_at.isoformat(),
+            "is_mine": c.complainant_id == current_user.id  # True if I filed it
+        })
+    
+    return result
 
 
 @router.get("/complaints/{complaint_id}", response_model=ComplaintResponse)

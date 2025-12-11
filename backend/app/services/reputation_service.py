@@ -14,7 +14,8 @@ from ..models.reputation import (
     Compliment,
     ComplaintStatus
 )
-from ..models.user import User, UserStatus, Customer, Chef, DeliveryPerson
+from ..models.user import User, UserStatus, UserType, Customer, Chef, DeliveryPerson
+from ..models.wallet import Wallet
 from ..core.config import settings
 
 
@@ -76,12 +77,12 @@ class ReputationService:
             # 2 Demotions => Fire
             if staff_record.demotion_count >= 2:
                 user.status = UserStatus.DEACTIVATED
-                self.record_event(user_id, "FIRED", "Fired due to 2nd demotion")
+                self.record_event(user_id, "FIRED", "Fired due to 2nd demotion", skip_performance_check=True)
             else:
                 # 1st Demotion => Lower Salary
                 if staff_record.salary > 0:
                     staff_record.salary *= 0.9 # 10% cut
-                self.record_event(user_id, "DEMOTION", "Demoted due to poor performance")
+                self.record_event(user_id, "DEMOTION", "Demoted due to poor performance", skip_performance_check=True)
             
             # Reset counters to give another chance (or valid for next cycle)
             staff_record.complaints_count = 0 
@@ -102,7 +103,7 @@ class ReputationService:
                 wallet.balance += 50.0 # $50 bonus
                 
             staff_record.salary *= 1.05 # 5% raise
-            self.record_event(user_id, "BONUS", "Performance bonus awarded")
+            self.record_event(user_id, "BONUS", "Performance bonus awarded", skip_performance_check=True)
             
             # Reset counters
             staff_record.compliments_count = 0
@@ -114,7 +115,8 @@ class ReputationService:
         user_id: int,
         event_type: str,
         details: str = "",
-        created_by: Optional[int] = None
+        created_by: Optional[int] = None,
+        skip_performance_check: bool = False
     ) -> bool:
         """
         Record events that affect user reputation and update scores.
@@ -184,8 +186,8 @@ class ReputationService:
                 user.status = UserStatus.BLACKLISTED
                 # TODO: Notify security or manager
             
-            # Check Staff Performance
-            if user.user_type in [UserType.CHEF, UserType.DELIVERY]:
+            # Check Staff Performance (skip if this is an internal event to prevent recursion)
+            if not skip_performance_check and user.user_type in [UserType.CHEF, UserType.DELIVERY]:
                 # Update staff specific counters
                 staff = user.chef if user.user_type == UserType.CHEF else user.delivery_person
                 if staff:

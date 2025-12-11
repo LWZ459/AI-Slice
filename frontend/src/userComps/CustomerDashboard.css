@@ -317,3 +317,94 @@
   margin-top: 20px;
 }
 
+/* Feedback Section Styles */
+.feedback-card {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.feedback-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.feedback-section h3 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.feedback-item {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border-left: 4px solid #ddd;
+}
+
+.feedback-item.compliment {
+  border-left-color: #27ae60;
+  background: #f0fff4;
+}
+
+.feedback-item.complaint-pending {
+  border-left-color: #f39c12;
+  background: #fffbf0;
+}
+
+.feedback-item.complaint-resolved {
+  border-left-color: #27ae60;
+  background: #f0fff4;
+}
+
+.feedback-item.complaint-rejected {
+  border-left-color: #e74c3c;
+  background: #fff5f5;
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.status-badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.pending {
+  background: #f39c12;
+  color: white;
+}
+
+.status-badge.resolved {
+  background: #27ae60;
+  color: white;
+}
+
+.status-badge.rejected {
+  background: #e74c3c;
+  color: white;
+}
+
+.feedback-target {
+  font-size: 13px;
+  color: #7f8c8d;
+  margin: 5px 0;
+}
+
+.resolution-note {
+  font-size: 13px;
+  background: #e8f5e9;
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  color: #2e7d32;
+}
+

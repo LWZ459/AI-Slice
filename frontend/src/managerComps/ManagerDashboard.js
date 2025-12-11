@@ -417,10 +417,10 @@ const ManagerDashboard = () => {
                     <div key={c.id} className="list-item compliment-item">
                       <div>
                         <strong>{c.title}</strong>
-                        <p>"{c.description.replace(' [ACKNOWLEDGED]', '')}"</p>
+                        {c.description && <p>"{(c.description || '').replace(' [ACKNOWLEDGED]', '')}"</p>}
                         <small>To: {c.receiver} (From: {c.giver})</small>
                       </div>
-                      {!c.description.includes('[ACKNOWLEDGED]') ? (
+                      {!(c.description || '').includes('[ACKNOWLEDGED]') && !c.acknowledged ? (
                         <button className="btn-small btn-success" onClick={() => handleAcknowledgeCompliment(c.id)}>
                           Acknowledge (+Rating)
                         </button>
