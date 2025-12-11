@@ -94,3 +94,13 @@ class QuestionRating(Base):
     def __repr__(self):
         return f"<QuestionRating {self.rating} stars>"
 
+
+class AIRating(Base):
+    """Rating for AI-generated answers (non-KB)."""
+    __tablename__ = "ai_ratings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    chat_log_id = Column(Integer, ForeignKey("chat_logs.id"), nullable=False)
+    rating = Column(Integer, nullable=False)
+    feedback = Column(String(1000), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

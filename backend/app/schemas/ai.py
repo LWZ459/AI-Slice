@@ -56,3 +56,26 @@ class MenuRecommendationRequest(BaseModel):
     time_of_day: Optional[str] = None  # morning, lunch, dinner, night
     preferences: Optional[str] = None  # comma-separated tags
 
+
+class AIRatingCreate(BaseModel):
+    """Schema for creating an AI answer rating."""
+    chat_log_id: int = Field(..., gt=0)
+    rating: int = Field(..., ge=0, le=5)
+    feedback: Optional[str] = Field(None, max_length=1000)
+
+
+class AIRatingResponse(BaseModel):
+    """Schema returned to frontend."""
+    id: int
+    chat_log_id: int
+    rating: int
+    feedback: Optional[str]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True  # required for SQLAlchemy → Pydantic V2
+
+
+class AIRatingUpdate(BaseModel):
+    rating: Optional[int] = Field(None, ge=0, le=5)
+    feedback: Optional[str] = Field(None, max_length=1000)

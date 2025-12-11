@@ -9,14 +9,43 @@ from ..core.database import get_db
 from ..core.security import get_current_active_user, require_user_type
 from ..models.user import User, UserType
 from ..schemas.ai import (
-    QuestionRequest, QuestionResponse,
-    AnswerRating, KnowledgeBaseCreate,
-    KnowledgeBaseResponse, MenuRecommendationRequest
+    QuestionRequest,
+    QuestionResponse,
+    AnswerRating,
+    KnowledgeBaseCreate,
+    KnowledgeBaseResponse,
+    MenuRecommendationRequest,
+    AIRatingCreate,
+    AIRatingResponse,
+    AIRatingUpdate,
 )
 from ..schemas.menu import DishResponse
 from ..services.ai_service import AIEngine
+from ..crud.crud_ai_rating import create_rating, update_rating
 
 router = APIRouter()
+
+
+@router.post("/", response_model=AIRatingResponse)
+def create_ai_rating(
+    rating_in: AIRatingCreate,
+    db: Session = Depends(get_db),
+):
+    """Create a new AI rating record."""
+    return create_rating(db, rating_in)
+
+
+@router.put("/{rating_id}", response_model=AIRatingResponse)
+def update_ai_rating(
+    rating_id: int,
+    rating_in: AIRatingUpdate,
+    db: Session = Depends(get_db),
+):
+    """Update an existing AI rating."""
+    updated = update_rating(db, rating_id, rating_in)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Rating not found")
+    return updated
 
 
 @router.post("/ask", response_model=QuestionResponse)

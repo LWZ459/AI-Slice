@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import AIRating from '../components/AIRating';
 import './AIChat.css';
 
 const AIChat = () => {
@@ -62,31 +63,6 @@ const AIChat = () => {
     }
   };
 
-  const handleRateAnswer = async (messageId, rating, chatLogId) => {
-    if (!chatLogId) return;
-
-    try {
-      await axios.post(`${API_BASE_URL}/api/ai/rate`, {
-        chat_log_id: chatLogId,
-        rating: rating,
-        feedback: "" // Optional feedback
-      });
-
-    setMessages(prevMessages => 
-      prevMessages.map(msg => 
-        msg.id === messageId ? { ...msg, rating } : msg
-      )
-    );
-    } catch (error) {
-      // Show error as a system message
-      setMessages(prev => [...prev, {
-        id: Date.now(),
-        text: "Failed to submit rating. Please check your connection and try again.",
-        sender: 'ai'
-      }]);
-    }
-  };
-
   return (
     <div className="ai-chat">
       <div className="chat-container">
@@ -106,20 +82,8 @@ const AIChat = () => {
                 {message.fromLocalKB && message.sender === 'ai' && (
                   <span className="kb-badge">From Knowledge Base</span>
                 )}
-                {message.sender === 'ai' && message.canRate && (
-                  <div className="message-rating">
-                    <span className="rating-label">Rate this answer:</span>
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <button
-                        key={star}
-                        className={`star-btn ${message.rating >= star ? 'active' : ''}`}
-                        onClick={() => handleRateAnswer(message.id, star, message.chatLogId)}
-                        disabled={message.rating !== null}
-                      >
-                        ★
-                      </button>
-                    ))}
-                  </div>
+                {message.sender === 'ai' && (
+                  <AIRating chatLogId={message.chatLogId} />
                 )}
               </div>
             </div>
