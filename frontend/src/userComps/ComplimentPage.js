@@ -4,7 +4,7 @@ import axios from 'axios';
 import API_BASE_URL from '../config/api';
 import './RateOrder.css';
 
-const ComplaintPage = () => {
+const ComplimentPage = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -25,7 +25,11 @@ const ComplaintPage = () => {
       const response = await axios.get(`${API_BASE_URL}/api/orders/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setOrders(response.data);
+      // Filter to only show delivered/completed orders
+      const completedOrders = response.data.filter(o => 
+        ['delivered', 'completed'].includes(o.status.toLowerCase())
+      );
+      setOrders(completedOrders);
       setLoading(false);
     } catch (err) {
       setError('Failed to load orders');
@@ -37,14 +41,15 @@ const ComplaintPage = () => {
     e.preventDefault();
     setError('');
     
-    if (!selectedOrder || !targetType || !title || !description) {
-      setError('Please fill in all required fields');
+    if (!selectedOrder || !targetType || !title) {
+      setError('Please select an order, who to compliment, and add a title');
       return;
     }
 
     // Get the target user ID based on selection
     let targetId;
     if (targetType === 'chef') {
+      // Use chef_id from the first item (simplified - assumes one chef per order)
       targetId = selectedOrder.items[0]?.chef_id;
     } else if (targetType === 'delivery') {
       targetId = selectedOrder.delivery_person_id;
@@ -58,22 +63,22 @@ const ComplaintPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `${API_BASE_URL}/api/reputation/complaint`,
+        `${API_BASE_URL}/api/reputation/compliment`,
         {
-          subject_id: targetId,
+          receiver_id: targetId,
           title: title,
-          description: description,
+          description: description || undefined,
           order_id: selectedOrder.id
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      setSuccess('Complaint filed successfully. A manager will review it shortly.');
+      setSuccess('Compliment submitted successfully! Thank you for your feedback. 🌟');
       setTimeout(() => {
         navigate('/customer');
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to file complaint');
+      setError(err.response?.data?.detail || 'Failed to submit compliment');
     }
   };
 
@@ -90,16 +95,16 @@ const ComplaintPage = () => {
   return (
     <div className="rate-order-container">
       <div className="rate-card">
-        <h1>File a Complaint</h1>
-        <p>We take your feedback seriously. Please describe the issue.</p>
+        <h1>Give a Compliment 🌟</h1>
+        <p>Recognize someone who provided excellent service!</p>
         
         {error && <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
         {success && <div className="success-message" style={{ color: 'green', marginBottom: '10px' }}>{success}</div>}
 
         {orders.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '20px' }}>
-            <p>No orders found.</p>
-            <p style={{ color: '#666' }}>Place an order first to file complaints.</p>
+            <p>No completed orders found.</p>
+            <p style={{ color: '#666' }}>Complete an order first to give compliments!</p>
             <button className="btn btn-primary" onClick={() => navigate('/menu')} style={{ marginTop: '15px' }}>
               Browse Menu
             </button>
@@ -122,7 +127,7 @@ const ComplaintPage = () => {
                 <option value="">-- Select an order --</option>
                 {orders.map(order => (
                   <option key={order.id} value={order.id}>
-                    Order #{order.id} - {order.status} - {order.items.map(i => i.dish_name).join(', ').substring(0, 30)}...
+                    Order #{order.id} - {order.items.map(i => i.dish_name).join(', ').substring(0, 40)}...
                   </option>
                 ))}
               </select>
@@ -130,28 +135,28 @@ const ComplaintPage = () => {
 
             {selectedOrder && (
               <div className="form-group">
-                <label>What is the complaint about? *</label>
+                <label>Who would you like to compliment? *</label>
                 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                   <button
                     type="button"
-                    className={`btn ${targetType === 'chef' ? 'btn-danger' : 'btn-secondary'}`}
+                    className={`btn ${targetType === 'chef' ? 'btn-primary' : 'btn-secondary'}`}
                     onClick={() => setTargetType('chef')}
                     style={{ flex: 1, padding: '15px' }}
                   >
-                    👨‍🍳 Food Quality
+                    👨‍🍳 Chef
                     <br/>
-                    <small>Issue with the food</small>
+                    <small>Food was great!</small>
                   </button>
                   <button
                     type="button"
-                    className={`btn ${targetType === 'delivery' ? 'btn-danger' : 'btn-secondary'}`}
+                    className={`btn ${targetType === 'delivery' ? 'btn-primary' : 'btn-secondary'}`}
                     onClick={() => setTargetType('delivery')}
                     style={{ flex: 1, padding: '15px' }}
                     disabled={!selectedOrder.delivery_person_id}
                   >
-                    🚴 Delivery Issue
+                    🚴 Delivery
                     <br/>
-                    <small>{selectedOrder.delivery_person_id ? 'Problem with delivery' : 'No delivery assigned'}</small>
+                    <small>{selectedOrder.delivery_person_id ? 'Fast & friendly!' : 'No delivery assigned'}</small>
                   </button>
                 </div>
               </div>
@@ -165,19 +170,18 @@ const ComplaintPage = () => {
                     type="text" 
                     value={title} 
                     onChange={e => setTitle(e.target.value)}
-                    placeholder={targetType === 'chef' ? 'e.g., Cold food, Wrong order' : 'e.g., Late delivery, Rude behavior'}
+                    placeholder={targetType === 'chef' ? 'e.g., Delicious food!' : 'e.g., Super fast delivery!'}
                     required
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Description *</label>
+                  <label>Description (optional)</label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Please describe the issue in detail. This helps us resolve it properly..."
-                    rows="4"
-                    required
+                    placeholder="Tell us more about your positive experience..."
+                    rows="3"
                   />
                 </div>
 
@@ -185,8 +189,8 @@ const ComplaintPage = () => {
                   <button type="button" className="btn btn-secondary" onClick={() => navigate('/customer')}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-danger">
-                    Submit Complaint
+                  <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#27ae60' }}>
+                    Submit Compliment 🌟
                   </button>
                 </div>
               </>
@@ -198,4 +202,4 @@ const ComplaintPage = () => {
   );
 };
 
-export default ComplaintPage;
+export default ComplimentPage;

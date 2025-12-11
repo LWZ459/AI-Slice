@@ -25,6 +25,7 @@ class OrderItemResponse(BaseModel):
     id: int
     dish_id: int
     dish_name: str
+    chef_id: Optional[int] = None  # Chef who made this dish
     quantity: int
     unit_price: float
     total_price: float
@@ -49,6 +50,7 @@ class OrderResponse(BaseModel):
     delivery_address: str
     food_rating: Optional[float] = None
     delivery_rating: Optional[float] = None
+    delivery_person_id: Optional[int] = None  # For complaints/compliments
     created_at: datetime
     items: List[OrderItemResponse] = []
     

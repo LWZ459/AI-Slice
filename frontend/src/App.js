@@ -23,6 +23,7 @@ import AIChat from './discussionComps/AIChat';
 import Forums from './discussionComps/Forums';
 import RateOrder from './userComps/RateOrder';
 import ComplaintPage from './userComps/ComplaintPage';
+import ComplimentPage from './userComps/ComplimentPage';
 
 function App() {
   return (
@@ -147,6 +148,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <ComplaintPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/compliment" 
+                  element={
+                    <ProtectedRoute>
+                      <ComplimentPage />
                     </ProtectedRoute>
                   } 
                 />

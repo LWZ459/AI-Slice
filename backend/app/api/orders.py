@@ -118,6 +118,11 @@ async def list_orders(
     # Convert to response format
     result = []
     for order in orders:
+        # Get delivery person's User ID if delivery exists
+        delivery_person_id = None
+        if order.delivery and order.delivery.delivery_person:
+            delivery_person_id = order.delivery.delivery_person.user_id
+        
         order_dict = {
             "id": order.id,
             "order_number": order.order_number,
@@ -132,12 +137,14 @@ async def list_orders(
             "delivery_address": order.delivery_address or "",
             "food_rating": order.food_rating,
             "delivery_rating": order.delivery_rating,
+            "delivery_person_id": delivery_person_id,
             "created_at": order.created_at,
             "items": [
                 {
                     "id": item.id,
                     "dish_id": item.dish_id,
                     "dish_name": item.dish.name,
+                    "chef_id": item.dish.chef.user_id if item.dish and item.dish.chef else None,
                     "quantity": item.quantity,
                     "unit_price": item.unit_price,
                     "total_price": item.total_price,
@@ -180,6 +187,11 @@ async def get_order(
                     detail="Not authorized to view this order"
                 )
     
+    # Get delivery person's User ID if delivery exists
+    delivery_person_id = None
+    if order.delivery and order.delivery.delivery_person:
+        delivery_person_id = order.delivery.delivery_person.user_id
+    
     # Convert to response
     order_dict = {
         "id": order.id,
@@ -195,12 +207,14 @@ async def get_order(
         "delivery_address": order.delivery_address or "",
         "food_rating": order.food_rating,
         "delivery_rating": order.delivery_rating,
+        "delivery_person_id": delivery_person_id,
         "created_at": order.created_at,
         "items": [
             {
                 "id": item.id,
                 "dish_id": item.dish_id,
                 "dish_name": item.dish.name,
+                "chef_id": item.dish.chef.user_id if item.dish and item.dish.chef else None,
                 "quantity": item.quantity,
                 "unit_price": item.unit_price,
                 "total_price": item.total_price,
