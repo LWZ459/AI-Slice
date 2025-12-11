@@ -2,15 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 import API_BASE_URL from '../config/api';
 import './HomePage.css';
 
 const HomePage = () => {
-  const { addToCart } = useCart();
+  const { addToCart, getTotalQuantity } = useCart();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [quantities, setQuantities] = useState({});
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
+  
+  // Check if user is VIP
+  const isVIP = user && (user.isVIP === true || user.is_vip === true || user.user_type === 'vip');
 
   // Fallback mock data if API fails
   const MOCK_DISHES = [
@@ -28,7 +34,9 @@ const HomePage = () => {
 
   const fetchDishes = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/menu/`);
+      // Always show VIP items (but non-VIPs can't order them - creates incentive!)
+      const url = `${API_BASE_URL}/api/menu/?include_special=true`;
+      const response = await axios.get(url);
       const apiDishes = response.data.map(d => ({
         ...d,
         rating: d.average_rating,
@@ -70,10 +78,23 @@ const HomePage = () => {
       addToCart(dish);
     }
     setQuantities(prev => ({ ...prev, [dish.id]: 1 }));
+    
+    // Show toast notification
+    setToast({ name: dish.name, quantity });
+    setTimeout(() => setToast(null), 2500);
   };
 
   return (
     <div className="homepage">
+      {/* Toast Notification */}
+      {toast && (
+        <div className="cart-toast">
+          <span className="toast-icon">✓</span>
+          <span><strong>{toast.quantity}x {toast.name}</strong> added to cart!</span>
+          <Link to="/checkout" className="toast-link">View Cart ({getTotalQuantity()})</Link>
+        </div>
+      )}
+      
       <section className="hero">
         <div className="hero-content">
           <h1 className="hero-title">AI Slice</h1>
@@ -115,7 +136,20 @@ const HomePage = () => {
                 )}
                 <div className="dish-content">
                   <div className="dish-header">
-                    <h3 className="dish-name">{dish.name}</h3>
+                    <h3 className="dish-name">
+                      {dish.name}
+                      {dish.is_special && (
+                        <span style={{
+                          background: 'linear-gradient(135deg, #f5af19, #f12711)',
+                          color: 'white',
+                          fontSize: '10px',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          marginLeft: '8px',
+                          fontWeight: 'bold'
+                        }}>VIP SPECIAL</span>
+                      )}
+                    </h3>
                     <span className="dish-price-badge">${dish.price.toFixed(2)}</span>
                   </div>
                   {dish.description && (
@@ -149,13 +183,29 @@ const HomePage = () => {
                         +
                       </button>
                     </div>
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => handleAddToCart(dish)}
-                      disabled={!dish.available}
-                    >
-                      {dish.available ? 'Add to Cart' : 'Unavailable'}
-                    </button>
+                    {dish.is_special && !isVIP ? (
+                      <button 
+                        className="btn vip-locked-btn"
+                        disabled
+                        title="Spend $100+ or place 3 orders to become VIP!"
+                        style={{
+                          background: 'linear-gradient(135deg, #f5af19, #f12711)',
+                          color: 'white',
+                          cursor: 'not-allowed',
+                          opacity: 0.9
+                        }}
+                      >
+                        🔒 VIP Only
+                      </button>
+                    ) : (
+                      <button 
+                        className="btn btn-primary"
+                        onClick={() => handleAddToCart(dish)}
+                        disabled={!dish.available}
+                      >
+                        {dish.available ? 'Add to Cart' : 'Unavailable'}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

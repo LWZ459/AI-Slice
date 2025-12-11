@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,13 +17,13 @@ const MOCK_DISHES = [
 ];
 
 const MenuBrowse = () => {
-  const { addToCart } = useCart();
+  const { addToCart, getTotalQuantity } = useCart();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [dishes, setDishes] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     fetchDishes();
@@ -34,7 +35,9 @@ const MenuBrowse = () => {
   const fetchDishes = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/api/menu/`);
+      // Always show VIP items (but non-VIPs can't order them - creates incentive!)
+      const url = `${API_BASE_URL}/api/menu/?include_special=true`;
+      const response = await axios.get(url);
       // Use API data if available, otherwise fallback to mock data
       const apiDishes = response.data && response.data.length > 0 ? response.data : MOCK_DISHES;
       setDishes(apiDishes);
@@ -80,14 +83,41 @@ const MenuBrowse = () => {
 
   const handleAddToCart = (dish) => {
     addToCart(dish);
+    // Show toast notification
+    setToast({ name: dish.name });
+    setTimeout(() => setToast(null), 2500);
   };
 
   if (loading && dishes.length === 0) return <div className="loading">Loading menu...</div>;
-  if (error) return <div className="error">{error}</div>;
+
+  // Check if user is VIP for display purposes
+  const isVIP = user && (user.isVIP === true || user.is_vip === true || user.user_type === 'vip');
 
   return (
     <div className="menu-browse">
+      {/* Toast Notification */}
+      {toast && (
+        <div className="cart-toast">
+          <span className="toast-icon">✓</span>
+          <span><strong>{toast.name}</strong> added to cart!</span>
+          <Link to="/checkout" className="toast-link">View Cart ({getTotalQuantity()})</Link>
+        </div>
+      )}
+      
       <h1 className="page-title">Browse Menu</h1>
+      {isVIP && (
+        <div className="vip-notice" style={{
+          background: 'linear-gradient(135deg, #f5af19, #f12711)',
+          color: 'white',
+          padding: '10px 20px',
+          borderRadius: '8px',
+          marginBottom: '20px',
+          textAlign: 'center',
+          fontWeight: 'bold'
+        }}>
+          ⭐ VIP Access: You can see exclusive Chef Specials!
+        </div>
+      )}
       
       <div className="search-section">
         <input
@@ -161,7 +191,20 @@ const MenuBrowse = () => {
                   )}
                   <div className="dish-content">
                     <div className="dish-header">
-                      <h3 className="dish-name">{dish.name}</h3>
+                      <h3 className="dish-name">
+                        {dish.name}
+                        {dish.is_special && (
+                          <span style={{
+                            background: 'linear-gradient(135deg, #f5af19, #f12711)',
+                            color: 'white',
+                            fontSize: '10px',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            marginLeft: '8px',
+                            fontWeight: 'bold'
+                          }}>VIP SPECIAL</span>
+                        )}
+                      </h3>
                       <span className="dish-price-badge">${dish.price.toFixed(2)}</span>
                     </div>
                     {dish.description && <p className="dish-description truncated">{dish.description}</p>}
@@ -169,13 +212,29 @@ const MenuBrowse = () => {
                        <span>Rating: {dish.average_rating ? dish.average_rating.toFixed(1) : 'N/A'}</span>
                     </div>
                     <div className="dish-footer">
-                      <button 
-                        className="btn btn-primary"
-                        onClick={() => handleAddToCart(dish)}
-                        disabled={!dish.is_available}
-                      >
-                        {dish.is_available ? 'Add to Cart' : 'Unavailable'}
-                      </button>
+                      {dish.is_special && !isVIP ? (
+                        <button 
+                          className="btn vip-locked-btn"
+                          disabled
+                          title="Spend $100+ or place 3 orders to become VIP!"
+                          style={{
+                            background: 'linear-gradient(135deg, #f5af19, #f12711)',
+                            color: 'white',
+                            cursor: 'not-allowed',
+                            opacity: 0.9
+                          }}
+                        >
+                          🔒 VIP Only
+                        </button>
+                      ) : (
+                        <button 
+                          className="btn btn-primary"
+                          onClick={() => handleAddToCart(dish)}
+                          disabled={!dish.is_available}
+                        >
+                          {dish.is_available ? 'Add to Cart' : 'Unavailable'}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
