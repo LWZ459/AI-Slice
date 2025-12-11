@@ -20,6 +20,7 @@ const SignIn = () => {
     if (isAuthenticated() && user) {
       const routes = {
         customer: '/customer',
+        vip: '/vip',
         chef: '/chef',
         delivery: '/delivery',
         manager: '/manager'
@@ -73,6 +74,7 @@ const SignIn = () => {
         // Redirect based on user type
         const routes = {
           customer: '/customer',
+          vip: '/vip',
           chef: '/chef',
           delivery: '/delivery',
           manager: '/manager'
@@ -81,7 +83,6 @@ const SignIn = () => {
         navigate(routes[user.user_type] || '/customer');
       }
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.detail || 'Invalid email or password. Please try again.');
       setLoading(false);
     }

@@ -195,7 +195,14 @@ async def get_current_user_info(
     
     Requires valid JWT token.
     """
-    return current_user
+    # Create response object
+    response = UserResponse.from_orm(current_user)
+    
+    # Populate extra fields
+    if current_user.user_type == UserType.CUSTOMER and current_user.customer:
+        response.is_vip = current_user.customer.is_vip
+        
+    return response
 
 
 @router.post("/logout")

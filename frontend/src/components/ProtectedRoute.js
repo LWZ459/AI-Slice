@@ -15,6 +15,7 @@ const ProtectedRoute = ({ children, requiredUserType = null }) => {
     // Redirect to their dashboard if wrong user type
     const routes = {
       customer: '/customer',
+      vip: '/vip',
       chef: '/chef',
       delivery: '/delivery',
       manager: '/manager'

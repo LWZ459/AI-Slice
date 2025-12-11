@@ -15,6 +15,8 @@ const SignUp = () => {
     phone: ''
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -22,12 +24,16 @@ const SignUp = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    setError(''); // Clear error on change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
 
@@ -43,11 +49,10 @@ const SignUp = () => {
         user_type: formData.userType
       });
       
-      alert('Registration successful! Please wait for manager approval before logging in.');
-      navigate('/signin');
+      setSuccessMessage('Registration successful! Please wait for manager approval before logging in.');
+      setTimeout(() => navigate('/signin'), 3000);
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.detail || 'Registration failed. Please try again.');
+      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -57,6 +62,19 @@ const SignUp = () => {
     <div className="signup-container">
       <div className="signup-card">
         <h1 className="signup-title">Create Account</h1>
+        
+        {error && (
+          <div className="error-message" style={{ color: '#e74c3c', marginBottom: '15px', padding: '10px', backgroundColor: '#fdecea', borderRadius: '4px' }}>
+            {error}
+          </div>
+        )}
+        
+        {successMessage && (
+          <div className="success-message" style={{ color: '#27ae60', marginBottom: '15px', padding: '10px', backgroundColor: '#eafaf1', borderRadius: '4px' }}>
+            {successMessage}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="signup-form">
           <div className="form-group">
             <label htmlFor="name">Full Name</label>

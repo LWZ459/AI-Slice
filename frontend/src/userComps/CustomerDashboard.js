@@ -16,6 +16,8 @@ const CustomerDashboard = () => {
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [depositAmount, setDepositAmount] = useState('');
   const [depositLoading, setDepositLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (user && user.id) {
@@ -51,7 +53,6 @@ const CustomerDashboard = () => {
       const balance = response.data.balance || 0;
       setWalletBalance(balance);
     } catch (error) {
-      console.error('Failed to fetch wallet:', error);
       // Set to 0 if error (user might not be a customer)
       setWalletBalance(0);
     } finally {
@@ -63,7 +64,7 @@ const CustomerDashboard = () => {
     if (!user || !user.id) return;
     
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/orders/`, {
+      const response = await axios.get(`${API_BASE_URL}/api/orders/?_t=${new Date().getTime()}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -79,7 +80,7 @@ const CustomerDashboard = () => {
         setOrders(sortedOrders);
       }
     } catch (error) {
-      console.error('Failed to fetch orders:', error);
+      // Silently fail
     } finally {
       setLoading(false);
     }
@@ -115,9 +116,11 @@ const CustomerDashboard = () => {
 
   const handleDeposit = async () => {
     const amount = parseFloat(depositAmount);
+    setError('');
+    setSuccessMessage('');
     
     if (!amount || amount <= 0) {
-      alert('Please enter a valid amount greater than 0');
+      setError('Please enter a valid amount greater than 0');
       return;
     }
 
@@ -125,6 +128,10 @@ const CustomerDashboard = () => {
     
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Please sign in again to deposit money.');
+      }
+      
       const response = await axios.post(
         `${API_BASE_URL}/api/wallet/deposit`,
         {
@@ -145,12 +152,16 @@ const CustomerDashboard = () => {
         // Also refetch to ensure we have the latest data
         await fetchWallet();
         setDepositAmount('');
-        setShowDepositModal(false);
-        alert(`Successfully deposited $${amount.toFixed(2)}! Your new balance is $${response.data.balance.toFixed(2)}`);
+        setSuccessMessage(`Successfully deposited $${amount.toFixed(2)}! Your new balance is $${response.data.balance.toFixed(2)}`);
+        
+        // Hide modal after delay
+        setTimeout(() => {
+          setShowDepositModal(false);
+          setSuccessMessage('');
+        }, 2000);
       }
     } catch (error) {
-      console.error('Deposit failed:', error);
-      alert(error.response?.data?.detail || 'Deposit failed. Please try again.');
+      setError(error.response?.data?.detail || 'Deposit failed. Please try again.');
     } finally {
       setDepositLoading(false);
     }
@@ -184,6 +195,10 @@ const CustomerDashboard = () => {
             <div className="modal-overlay" onClick={() => setShowDepositModal(false)}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <h3>Deposit Money</h3>
+                
+                {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+                {successMessage && <div style={{ color: 'green', marginBottom: '10px' }}>{successMessage}</div>}
+                
                 <div className="form-group">
                   <label htmlFor="depositAmount">Amount ($)</label>
                   <input

@@ -7,15 +7,16 @@ const RateOrder = () => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [hoveredStar, setHoveredStar] = useState(0);
+  const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (rating === 0) {
-      alert('Please select a rating');
+      setError('Please select a rating');
       return;
     }
     // TODO: Submit rating to backend
-    alert('Thank you for your feedback!');
+    // Since this is a mock submit for now, we just redirect
     navigate('/customer');
   };
 
@@ -24,6 +25,8 @@ const RateOrder = () => {
       <div className="rate-card">
         <h1>Rate Your Order</h1>
         <p>How was your food?</p>
+        
+        {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="star-rating-lg">
@@ -66,6 +69,8 @@ const RateOrder = () => {
 };
 
 export default RateOrder;
+
+
 
 
 

@@ -40,7 +40,6 @@ const MenuBrowse = () => {
       setDishes(apiDishes);
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching menu:', err);
       // On error, use mock data as fallback
       setDishes(MOCK_DISHES);
       setLoading(false);
@@ -63,7 +62,6 @@ const MenuBrowse = () => {
       const response = await axios.get(`${API_BASE_URL}/api/menu/recommendations?time_of_day=${timeOfDay}`, config);
       setRecommendations(response.data);
     } catch (err) {
-      console.error('Error fetching recommendations:', err);
       // Fallback or just ignore recommendations error
     }
   };

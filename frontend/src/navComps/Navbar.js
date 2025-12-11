@@ -31,6 +31,7 @@ const Navbar = () => {
     if (!user) return '/customer';
     const routes = {
       customer: '/customer',
+      vip: '/vip',
       chef: '/chef',
       delivery: '/delivery',
       manager: '/manager'

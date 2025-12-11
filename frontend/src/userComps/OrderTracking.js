@@ -52,7 +52,6 @@ const OrderTracking = () => {
         setError('Order not found');
       }
     } catch (err) {
-      console.error('Failed to fetch order:', err);
       setError('Failed to load order details');
     } finally {
       setLoading(false);
@@ -83,42 +82,26 @@ const OrderTracking = () => {
     return steps;
   };
 
-  const getEstimatedWaitTime = (status, createdAt) => {
-    if (!status || !createdAt) return null;
+  const getEstimatedWaitTime = (status) => {
+    if (!status) return null;
     
     const statusLower = status.toLowerCase();
-    const orderTime = new Date(createdAt);
-    const now = new Date();
-    const elapsedMinutes = Math.floor((now - orderTime) / (1000 * 60));
     
-    if (statusLower.includes('delivered')) {
-      return null; // Don't show wait time for delivered orders
+    if (statusLower.includes('delivered') || statusLower.includes('cancelled')) {
+      return null;
     }
     
-    let estimatedTotalMinutes;
     if (statusLower.includes('placed')) {
-      estimatedTotalMinutes = 30; // 15-30 minutes from placement (requested range)
-    } else if (statusLower.includes('preparing')) {
-      estimatedTotalMinutes = 25; // ~25 minutes remaining
+      return "~20-30 minutes";
+    } else if (statusLower.includes('preparing') || statusLower.includes('cooking')) {
+      return "~15-25 minutes";
     } else if (statusLower.includes('assigned')) {
-      estimatedTotalMinutes = 20; // ~20 minutes remaining
-    } else if (statusLower.includes('delivery') && !statusLower.includes('delivered')) {
-      estimatedTotalMinutes = 10; // ~10 minutes remaining
-    } else {
-      estimatedTotalMinutes = 30; // Default
+      return "~10-20 minutes";
+    } else if (statusLower.includes('delivery')) {
+      return "~5-15 minutes";
     }
     
-    const remainingMinutes = Math.max(0, estimatedTotalMinutes - elapsedMinutes);
-    
-    if (remainingMinutes <= 0) {
-      return 'Arriving soon';
-    } else if (remainingMinutes < 60) {
-      return `~${remainingMinutes} minutes`;
-    } else {
-      const hours = Math.floor(remainingMinutes / 60);
-      const minutes = remainingMinutes % 60;
-      return minutes > 0 ? `~${hours}h ${minutes}m` : `~${hours}h`;
-    }
+    return "~15-30 minutes";
   };
 
   if (loading) {
@@ -146,7 +129,7 @@ const OrderTracking = () => {
   }
 
   const statusSteps = getStatusSteps(order.status);
-  const estimatedWaitTime = getEstimatedWaitTime(order.status, order.created_at || order.createdAt);
+  const estimatedWaitTime = getEstimatedWaitTime(order.status);
 
   return (
     <div className="order-tracking">

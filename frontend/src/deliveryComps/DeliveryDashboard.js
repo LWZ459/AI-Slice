@@ -11,30 +11,55 @@ const DeliveryDashboard = () => {
 
   useEffect(() => {
     fetchData();
+    const interval = setInterval(fetchData, 10000); // Refresh every 10s
+    return () => clearInterval(interval);
   }, []);
 
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
+      const timestamp = new Date().getTime();
 
       const [availableRes, myRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/delivery/available`, config),
-        axios.get(`${API_BASE_URL}/api/delivery/my-deliveries`, config)
+        axios.get(`${API_BASE_URL}/api/delivery/available?_t=${timestamp}`, config),
+        axios.get(`${API_BASE_URL}/api/delivery/my-deliveries?_t=${timestamp}`, config)
       ]);
 
       setAvailableDeliveries(availableRes.data);
       setMyDeliveries(myRes.data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching delivery data:', error);
       setLoading(false);
     }
   };
 
   const handleUpdateStatus = async (deliveryId, newStatus) => {
-      // Logic to update status would go here
-      alert(`Update status for ${deliveryId} to ${newStatus}`);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `${API_BASE_URL}/api/delivery/${deliveryId}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // Refresh data
+      fetchData();
+    } catch (error) {
+      // Fail silently or handle error appropriately
+    }
+  };
+
+  const getNextStatus = (currentStatus) => {
+    const status = currentStatus?.toLowerCase() || '';
+    if (status === 'assigned') return 'picked_up';
+    if (status === 'picked_up' || status === 'in_transit') return 'delivered';
+    return null;
+  };
+
+  const getActionLabel = (nextStatus) => {
+    if (nextStatus === 'picked_up') return 'Mark Picked Up';
+    if (nextStatus === 'delivered') return 'Mark Delivered';
+    return '';
   };
 
   return (
@@ -56,7 +81,13 @@ const DeliveryDashboard = () => {
                     <p>Dropoff: {delivery.delivery_address}</p>
                     <p className="base-price">Est. Pay: ${delivery.estimated_pay?.toFixed(2) || '---'}</p>
                 </div>
-                <Link to="/bidding" className="btn btn-primary">Place Bid</Link>
+                  <Link 
+                    to="/bidding" 
+                    state={{ deliveryId: delivery.id }}
+                    className="btn btn-primary"
+                  >
+                    Place Bid
+                  </Link>
               </div>
             ))}
           </div>
@@ -69,23 +100,28 @@ const DeliveryDashboard = () => {
             <p className="empty-state">No active deliveries</p>
           ) : (
             <div className="deliveries-list">
-              {myDeliveries.map(delivery => (
-                <div key={delivery.id} className="delivery-card">
-                  <h3>Order #{delivery.order_id}</h3>
-                  <p>Address: {delivery.delivery_address}</p>
-                  <div className="delivery-status">
-                    <span className={`status-badge ${delivery.status?.toLowerCase().replace(' ', '-')}`}>
-                      {delivery.status}
-                    </span>
+              {myDeliveries.map(delivery => {
+                const nextStatus = getNextStatus(delivery.status);
+                return (
+                  <div key={delivery.id} className="delivery-card">
+                    <h3>Order #{delivery.order_id}</h3>
+                    <p>Address: {delivery.delivery_address}</p>
+                    <div className="delivery-status">
+                      <span className={`status-badge ${delivery.status?.toLowerCase().replace(' ', '-')}`}>
+                        {delivery.status}
+                      </span>
+                    </div>
+                    {nextStatus && (
+                      <button 
+                        className="btn btn-success"
+                        onClick={() => handleUpdateStatus(delivery.id, nextStatus)}
+                      >
+                        {getActionLabel(nextStatus)}
+                      </button>
+                    )}
                   </div>
-                  <button 
-                    className="btn btn-success"
-                    onClick={() => handleUpdateStatus(delivery.id, 'delivered')}
-                  >
-                    Update Status
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

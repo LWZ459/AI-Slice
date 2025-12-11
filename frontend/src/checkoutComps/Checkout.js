@@ -57,7 +57,6 @@ const Checkout = () => {
         navigate('/customer');
       }, 3000);
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.detail || 'Order failed. Please check your wallet balance.');
     } finally {
       setLoading(false);

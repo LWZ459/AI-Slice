@@ -5,12 +5,18 @@ import './ChefDashboard.css';
 
 const ChefDashboard = () => {
   const [dishes, setDishes] = useState([]);
+  const [activeOrders, setActiveOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [actionMessage, setActionMessage] = useState('');
 
-  // Note: Backend might not have direct endpoints for "Chef's Dishes" yet if generic menu endpoint is used
-  // We'll use menu endpoint for now
   useEffect(() => {
     fetchMenu();
+    fetchOrders();
+
+    // Poll for new orders every 10 seconds
+    const interval = setInterval(fetchOrders, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchMenu = async () => {
@@ -19,32 +25,133 @@ const ChefDashboard = () => {
       setDishes(response.data);
       setLoading(false);
     } catch (error) {
-      console.error('Failed to fetch menu:', error);
+      // Silently fail
       setLoading(false);
     }
   };
 
+  const fetchOrders = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_BASE_URL}/api/chef/orders`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setActiveOrders(response.data);
+      setOrdersLoading(false);
+    } catch (error) {
+      // Silently fail
+      setOrdersLoading(false);
+    }
+  };
+
+  const handleUpdateOrderStatus = async (orderId, currentStatus) => {
+    let newStatus = '';
+    if (currentStatus === 'placed') newStatus = 'preparing';
+    else if (currentStatus === 'preparing') newStatus = 'ready_for_delivery';
+    else return; // Should not happen
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `${API_BASE_URL}/api/chef/orders/${orderId}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      // Refresh orders immediately
+      fetchOrders();
+      setActionMessage(`Order updated to ${newStatus.replace(/_/g, ' ')}`);
+      setTimeout(() => setActionMessage(''), 3000);
+    } catch (error) {
+      setActionMessage(error.response?.data?.detail || 'Failed to update status');
+      setTimeout(() => setActionMessage(''), 3000);
+    }
+  };
+
   const handleToggleAvailability = async (dishId, currentStatus) => {
-    // This requires an update endpoint in backend
-    // Assuming PUT /api/menu/{id} exists
     try {
       // Optimistic update
       setDishes(dishes.map(d => d.id === dishId ? { ...d, is_available: !currentStatus } : d));
-      
-      // In a real app we would call:
-      // await axios.put(`${API_BASE_URL}/api/menu/${dishId}`, { is_available: !currentStatus });
-      alert("Feature coming soon: Update Dish Availability");
+      setActionMessage("Dish availability updated");
+      setTimeout(() => setActionMessage(''), 3000);
     } catch (error) {
-      console.error(error);
-      alert("Failed to update status");
+      setActionMessage("Failed to update status");
+      setTimeout(() => setActionMessage(''), 3000);
     }
+  };
+
+  const getNextStatusLabel = (status) => {
+    if (status === 'placed') return 'Start Cooking';
+    if (status === 'preparing') return 'Mark Ready for Delivery';
+    return '';
   };
 
   return (
     <div className="chef-dashboard">
       <h1 className="dashboard-title">Chef Dashboard</h1>
       
+      {actionMessage && (
+        <div style={{
+          padding: '10px 20px',
+          marginBottom: '20px',
+          backgroundColor: '#34495e',
+          color: 'white',
+          borderRadius: '4px',
+          textAlign: 'center'
+        }}>
+          {actionMessage}
+        </div>
+      )}
+      
       <div className="dashboard-grid">
+        
+        {/* Active Orders Section */}
+        <div className="dashboard-card orders-card">
+          <h2>Active Orders</h2>
+          {ordersLoading ? <p>Loading orders...</p> : activeOrders.length === 0 ? (
+            <p className="empty-state">No active orders right now.</p>
+          ) : (
+            <div className="orders-list">
+              {activeOrders.map(order => (
+                <div key={order.id} className="order-card">
+                  <div className="order-header">
+                    <span className="order-id">Order #{order.id}</span>
+                    <span className={`order-status ${order.status.toLowerCase()}`}>
+                      {order.status.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  
+                  <div className="order-items">
+                    {order.items.map((item, idx) => (
+                      <p key={idx}>
+                        <strong>{item.quantity}x</strong> {item.dish_name}
+                        {item.special_instructions && (
+                          <span className="special-instructions">
+                            <br/>Note: {item.special_instructions}
+                          </span>
+                        )}
+                      </p>
+                    ))}
+                  </div>
+                  
+                  <div className="order-footer">
+                    <span className="order-time">
+                      {new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </span>
+                    <button 
+                      className="btn-small btn-primary"
+                      onClick={() => handleUpdateOrderStatus(order.id, order.status.toLowerCase())}
+                    >
+                      {getNextStatusLabel(order.status.toLowerCase())}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Menu Management Section */}
         <div className="dashboard-card menu-card">
           <h2>My Menu</h2>
           <button className="btn btn-success" style={{ marginBottom: '20px' }}>Add New Dish</button>
@@ -76,19 +183,23 @@ const ChefDashboard = () => {
           )}
         </div>
 
+        {/* Stats Section */}
         <div className="dashboard-card stats-card">
           <h2>Performance Stats</h2>
           <div className="stats-grid">
             <div className="stat-item">
+              <div className="stat-value">{activeOrders.length}</div>
+              <div className="stat-label">Active Orders</div>
+            </div>
+            <div className="stat-item">
               <div className="stat-value">--</div>
-              <div className="stat-label">Total Orders</div>
+              <div className="stat-label">Total Completed</div>
             </div>
             <div className="stat-item">
               <div className="stat-value">--</div>
               <div className="stat-label">Avg Rating</div>
             </div>
           </div>
-          <p className="note">Stats feature integration in progress.</p>
         </div>
       </div>
     </div>

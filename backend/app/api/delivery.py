@@ -20,13 +20,15 @@ router = APIRouter()
 
 @router.get("/available", response_model=List[DeliveryResponse])
 async def list_available_deliveries(
-    current_user: User = Depends(require_user_type(UserType.DELIVERY)),
+    current_user: User = Depends(require_user_type(UserType.DELIVERY, UserType.MANAGER)),
     db: Session = Depends(get_db)
 ):
     """
-    List deliveries available for bidding (Delivery Personnel only).
+    List deliveries available for bidding.
     
-    Shows orders that are currently accepting bids.
+    Accessible by:
+    - Delivery Personnel: To place bids
+    - Managers: To view status and manage assignments
     """
     delivery_service = DeliveryService(db)
     deliveries = delivery_service.get_available_deliveries()
@@ -230,6 +232,18 @@ async def update_delivery_status(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid status: {status_update.status}"
+        )
+        
+    # Validate transition
+    if new_status == DeliveryStatus.PICKED_UP and delivery.status != DeliveryStatus.ASSIGNED:
+         raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Can only pick up assigned deliveries"
+        )
+    elif new_status == DeliveryStatus.DELIVERED and delivery.status not in [DeliveryStatus.PICKED_UP, DeliveryStatus.IN_TRANSIT]:
+         raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Can only deliver picked up deliveries"
         )
     
     # Update status
