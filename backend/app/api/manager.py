@@ -209,4 +209,11 @@ async def activate_all_pending_users(
         "success": True,
         "message": f"Activated {count} pending users"
     }
+# manager promote and demote
+@router.post("/promote/{user_id}")
+async def promote_user(user_id: int, reason: str, current_user: User = Depends(require_user_type(UserType.MANAGER))):
+    """Manager manually promotes user (to VIP or higher role)."""
 
+@router.post("/demote/{user_id}")  
+async def demote_user(user_id: int, reason: str, current_user: User = Depends(require_user_type(UserType.MANAGER))):
+    """Manager manually demotes user (from VIP or for performance)."""
