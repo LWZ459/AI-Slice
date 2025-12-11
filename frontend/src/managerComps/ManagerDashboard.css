@@ -1,10 +1,12 @@
 .manager-dashboard {
-  padding: 20px 0;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .dashboard-title {
   color: #2c3e50;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
@@ -18,106 +20,162 @@
   animation: fadeIn 0.3s ease;
 }
 
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ddd;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #7f8c8d;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tabs button.active {
+  color: #3498db;
+  border-bottom-color: #3498db;
+  font-weight: 600;
+}
+
+.tabs button:hover {
+  color: #2c3e50;
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 20px;
 }
 
+.dashboard-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
 .dashboard-card {
   background: white;
   border-radius: 10px;
-  padding: 25px;
+  padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid #e0e0e0;
 }
 
 .dashboard-card h2 {
   color: #2c3e50;
+  margin-top: 0;
   margin-bottom: 15px;
-  font-size: 1.4rem;
-  border-bottom: 2px solid #f0f0f0;
+  font-size: 1.3rem;
+  border-bottom: 1px solid #eee;
   padding-bottom: 10px;
 }
 
 .empty-state {
   text-align: center;
-  color: #7f8c8d;
-  padding: 20px 0;
+  color: #95a5a6;
+  padding: 20px;
   font-style: italic;
 }
 
-/* Delivery Management Styles */
-.deliveries-list {
+/* List Styles */
+.list-container {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 }
 
-.delivery-manage-item {
+.list-item {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
-  border-radius: 8px;
   padding: 15px;
-}
-
-.delivery-info h3 {
-  margin: 0 0 10px 0;
-  font-size: 1.1rem;
-  color: #2c3e50;
-}
-
-.delivery-info p {
-  margin: 5px 0;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.delivery-actions {
+  border-radius: 6px;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-top: 15px;
 }
 
-.bids-section {
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #dee2e6;
-  background-color: white;
-  padding: 10px;
-  border-radius: 4px;
-}
-
-.bids-section h4 {
-  margin: 0 0 10px 0;
-  font-size: 1rem;
-  color: #34495e;
-}
-
-.bids-list-small {
-  display: flex;
+.complaint-item, .compliment-item {
   flex-direction: column;
+  align-items: flex-start;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  background-color: #e3f2fd;
+  color: #2196f3;
+  margin-top: 5px;
+}
+
+.actions {
+  display: flex;
   gap: 8px;
 }
 
-.bid-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto;
-  align-items: center;
-  padding: 8px;
-  background: #f1f3f5;
-  border-radius: 4px;
-  font-size: 0.9rem;
+/* Table Styles */
+.table-responsive {
+  overflow-x: auto;
 }
 
-/* Buttons */
+.staff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.staff-table th, .staff-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.staff-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.salary-display {
+  cursor: pointer;
+  border-bottom: 1px dashed #999;
+}
+
+.salary-edit {
+  display: flex;
+  gap: 5px;
+}
+
+.salary-edit input {
+  width: 80px;
+  padding: 4px;
+}
+
+/* Button Styles */
 .btn-small {
   padding: 6px 12px;
   font-size: 0.85rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s;
   color: white;
 }
 
@@ -125,48 +183,54 @@
   padding: 4px 8px;
   font-size: 0.8rem;
   border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  background: #34495e;
-  color: white;
-}
-
-.btn-xs:hover {
-  background: #2c3e50;
-}
-
-.btn-primary {
-  background-color: #3498db;
-}
-
-.btn-primary:hover {
-  background-color: #2980b9;
-}
-
-.btn-success {
-  background-color: #27ae60;
-}
-
-.btn-success:hover {
-  background-color: #219150;
-}
-
-.btn-secondary {
-  background-color: #95a5a6;
-  color: white;
-  border: none;
-  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
+  color: white;
 }
 
-.note {
-  font-size: 0.85rem;
-  color: #7f8c8d;
-  font-style: italic;
+.btn-primary { background-color: #3498db; }
+.btn-success { background-color: #2ecc71; }
+.btn-danger { background-color: #e74c3c; }
+.btn-secondary { background-color: #95a5a6; }
+
+.btn-small:hover, .btn-xs:hover {
+  opacity: 0.9;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Delivery Items */
+.delivery-manage-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.bids-section {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.bid-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.resolution-box {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.resolution-box textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }

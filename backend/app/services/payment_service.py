@@ -58,6 +58,28 @@ class PaymentService:
         wallet.total_spent += amount
         balance_after = wallet.balance
         
+        # Update Customer stats and check for VIP upgrade
+        if customer:
+            customer.total_spent += amount
+            customer.total_orders += 1
+            
+            # VIP Upgrade Logic: > $100 spent OR >= 3 orders
+            if not customer.is_vip:
+                if customer.total_spent > 100.0 or customer.total_orders >= 3:
+                    # Check for outstanding complaints
+                    # We need to access ReputationService, but need to be careful of circular imports
+                    # For now, let's assume this check happens or we do a direct DB query
+                    from ..models.reputation import Complaint, ComplaintStatus
+                    outstanding_complaints = self.db.query(Complaint).filter(
+                        Complaint.subject_id == customer.user_id,
+                        Complaint.status.in_([ComplaintStatus.PENDING, ComplaintStatus.UNDER_REVIEW])
+                    ).count()
+                    
+                    if outstanding_complaints == 0:
+                        customer.is_vip = True
+                        customer.vip_since = datetime.utcnow()
+                        customer.vip_orders_count = 0 # Reset for free delivery tracking
+        
         # Create a payment transaction record
         transaction = Transaction(
             wallet_id=wallet.id,

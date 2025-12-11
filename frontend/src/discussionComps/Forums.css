@@ -44,7 +44,8 @@
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.input-select {
   width: 100%;
   padding: 0.8rem;
   border: 1px solid #ddd;
@@ -64,6 +65,12 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   border-left: 4px solid #3498db;
+  transition: transform 0.2s;
+}
+
+.topic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .topic-header {
@@ -78,17 +85,29 @@
 .topic-header h3 {
   margin: 0;
   color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.topic-category-badge {
+  background-color: #e3f2fd;
+  color: #2196f3;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .topic-meta {
   color: #7f8c8d;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
 }
 
-.topic-content {
-  color: #34495e;
-  line-height: 1.5;
+.topic-preview {
+  color: #555;
+  font-size: 0.95rem;
   margin-bottom: 1rem;
+  line-height: 1.4;
 }
 
 .topic-footer {
@@ -97,14 +116,85 @@
   align-items: center;
   border-top: 1px solid #eee;
   padding-top: 1rem;
+  gap: 1rem;
 }
 
-.topic-replies {
-  color: #7f8c8d;
-  font-weight: 500;
+.topic-stat {
+  color: #95a5a6;
+  font-size: 0.9rem;
+  margin-right: 1rem;
 }
 
+/* Detail View Styles */
+.topic-detail {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 2rem;
+}
 
+.topic-header-detail {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
 
+.topic-main-content {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #2c3e50;
+  margin-bottom: 3rem;
+  white-space: pre-wrap;
+}
 
+.posts-section {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
 
+.post-card {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border: 1px solid #e9ecef;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.post-date {
+  color: #999;
+}
+
+.post-content {
+  color: #444;
+  line-height: 1.5;
+}
+
+.reply-form-section {
+  margin-top: 2rem;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1.5rem;
+}
+
+.reply-form-section textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-family: inherit;
+}
+
+.empty-state {
+  text-align: center;
+  color: #95a5a6;
+  padding: 3rem;
+  font-style: italic;
+}

@@ -22,6 +22,7 @@ import NotFound from './404Page/NotFound';
 import AIChat from './discussionComps/AIChat';
 import Forums from './discussionComps/Forums';
 import RateOrder from './userComps/RateOrder';
+import ComplaintPage from './userComps/ComplaintPage';
 
 function App() {
   return (
@@ -55,7 +56,23 @@ function App() {
                   } 
                 />
                 <Route 
+                  path="/reviews/:orderId" 
+                  element={
+                    <ProtectedRoute requiredUserType="customer">
+                      <RateOrder />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
                   path="/delivery-reviews" 
+                  element={
+                    <ProtectedRoute requiredUserType="customer">
+                      <RateOrder />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/delivery-reviews/:orderId" 
                   element={
                     <ProtectedRoute requiredUserType="customer">
                       <RateOrder />
@@ -122,6 +139,14 @@ function App() {
                   element={
                     <ProtectedRoute requiredUserType="delivery">
                       <BiddingPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/complaint" 
+                  element={
+                    <ProtectedRoute>
+                      <ComplaintPage />
                     </ProtectedRoute>
                   } 
                 />

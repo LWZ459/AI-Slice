@@ -58,6 +58,7 @@ class OrderResponse(BaseModel):
 
 class OrderRating(BaseModel):
     """Schema for rating an order."""
-    food_rating: Optional[float] = Field(None, ge=1, le=5)
+    food_rating: Optional[float] = Field(None, ge=1, le=5) # Kept for backward compatibility or overall rating
     delivery_rating: Optional[float] = Field(None, ge=1, le=5)
+    items: Optional[List[dict]] = None # List of {order_item_id: int, rating: float}
 

@@ -106,15 +106,21 @@ const MenuBrowse = () => {
           <div className="dishes-grid recommendations-grid">
             {recommendations.map(dish => (
               <div key={`rec-${dish.id}`} className="dish-card">
-                <div className={`dish-image pattern-${dish.id % 3 + 1}`}>
-                  <span className="recommendation-badge">Top Pick</span>
-                </div>
+                {dish.image_url ? (
+                  <img src={dish.image_url} alt={dish.name} className="dish-image-img" />
+                ) : (
+                  <div className={`dish-image pattern-${dish.id % 3 + 1}`}>
+                    <span className="recommendation-badge">Top Pick</span>
+                  </div>
+                )}
+                {dish.image_url && <span className="recommendation-badge">Top Pick</span>}
                 <div className="dish-content">
                   <div className="dish-header">
                     <h3 className="dish-name">{dish.name}</h3>
                     <span className="dish-price-badge">${dish.price.toFixed(2)}</span>
                   </div>
                   {/* Chef name not always available in basic dish object depending on backend */}
+                  {dish.description && <p className="dish-description truncated">{dish.description}</p>}
                   <div className="dish-rating">
                     <span>★ {dish.average_rating ? dish.average_rating.toFixed(1) : 'New'}</span>
                   </div>
@@ -148,13 +154,17 @@ const MenuBrowse = () => {
                   key={dish.id} 
                   className={`dish-card ${isWide ? 'dish-card-wide' : ''}`}
                 >
-                  <div className={`dish-image pattern-${(index % 3) + 1}`}></div>
+                  {dish.image_url ? (
+                    <img src={dish.image_url} alt={dish.name} className="dish-image-img" />
+                  ) : (
+                    <div className={`dish-image pattern-${(index % 3) + 1}`}></div>
+                  )}
                   <div className="dish-content">
                     <div className="dish-header">
                       <h3 className="dish-name">{dish.name}</h3>
                       <span className="dish-price-badge">${dish.price.toFixed(2)}</span>
                     </div>
-                    {dish.description && <p className="dish-description">{dish.description}</p>}
+                    {dish.description && <p className="dish-description truncated">{dish.description}</p>}
                     <div className="dish-rating">
                        <span>Rating: {dish.average_rating ? dish.average_rating.toFixed(1) : 'N/A'}</span>
                     </div>

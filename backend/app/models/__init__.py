@@ -6,6 +6,7 @@ from .menu import Dish, DishCategory
 from .order import Order, OrderItem, OrderStatus
 from .wallet import Wallet, Transaction
 from .reputation import Reputation, ReputationEvent, Complaint, Compliment
+from .forum import ForumTopic, ForumPost
 from .delivery import Delivery, DeliveryBid, DeliveryStatus
 from .ai import KnowledgeBase, ChatLog, QuestionRating
 
@@ -34,5 +35,7 @@ __all__ = [
     "KnowledgeBase",
     "ChatLog",
     "QuestionRating",
+    "ForumTopic",
+    "ForumPost"
 ]
 

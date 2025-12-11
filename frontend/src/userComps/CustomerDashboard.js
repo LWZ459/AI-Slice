@@ -191,6 +191,13 @@ const CustomerDashboard = () => {
             Deposit Money
           </button>
           
+          {user && user.reputation && user.reputation.total_warnings > 0 && (
+             <div className="warning-banner" style={{marginTop: '15px', padding: '10px', backgroundColor: '#ffebee', border: '1px solid #ffcdd2', borderRadius: '4px', color: '#c62828'}}>
+                <strong>⚠️ Warnings: {user.reputation.total_warnings}</strong>
+                {user.reputation.total_warnings >= 2 && <p>Warning: 3 warnings will result in account closure.</p>}
+             </div>
+          )}
+          
           {showDepositModal && (
             <div className="modal-overlay" onClick={() => setShowDepositModal(false)}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -317,6 +324,15 @@ const CustomerDashboard = () => {
                   >
                     Track Order
                   </Link>
+                  {order.status && order.status.toLowerCase() === 'delivered' && (
+                    <Link 
+                      to={`/reviews/${order.id}`} 
+                      className="btn btn-primary"
+                      style={{ marginTop: '10px', marginLeft: '10px', fontSize: '14px', padding: '8px 16px' }}
+                    >
+                      Rate Order
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>
@@ -328,6 +344,14 @@ const CustomerDashboard = () => {
           <div className="reviews-section">
             <Link to="/reviews" className="btn btn-secondary">Rate Food</Link>
             <Link to="/delivery-reviews" className="btn btn-secondary">Rate Delivery</Link>
+          </div>
+        </div>
+
+        <div className="dashboard-card">
+          <h2>Complaints</h2>
+          <p>Have an issue?</p>
+          <div className="quick-actions">
+             <Link to="/complaint" className="btn btn-danger">File Complaint</Link>
           </div>
         </div>
 

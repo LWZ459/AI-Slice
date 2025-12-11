@@ -15,6 +15,7 @@ from ..models.user import User
 
 # OAuth2 scheme for token
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="api/auth/login", auto_error=False)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -144,6 +145,34 @@ async def get_current_active_user(
         )
     
     return current_user
+
+
+async def get_optional_current_user(
+    token: Optional[str] = Depends(oauth2_scheme_optional),
+    db: Session = Depends(get_db)
+) -> Optional[User]:
+    """
+    Get current user if authenticated, else None.
+    """
+    if not token:
+        return None
+        
+    payload = decode_access_token(token)
+    if payload is None:
+        return None
+    
+    user_id_str: str = payload.get("sub")
+    if user_id_str is None:
+        return None
+    
+    try:
+        user_id = int(user_id_str)
+    except (ValueError, TypeError):
+        return None
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    return user
+
 
 
 def require_user_type(*allowed_types):

@@ -55,6 +55,8 @@ class User(Base):
     wallet = relationship("Wallet", back_populates="user", uselist=False)
     reputation = relationship("Reputation", back_populates="user", uselist=False)
     chat_logs = relationship("ChatLog", back_populates="user")
+    forum_topics = relationship("ForumTopic", back_populates="author")
+    forum_posts = relationship("ForumPost", back_populates="author")
     
     # Type specific relationships
     customer = relationship("Customer", back_populates="user", uselist=False)
@@ -158,6 +160,8 @@ class DeliveryPerson(Base):
     demotion_count = Column(Integer, default=0)
     
     is_available = Column(Boolean, default=True)
+    
+    salary = Column(Float, default=0.0) # Added salary field
     
     user = relationship("User", back_populates="delivery_person")
     bids = relationship("DeliveryBid", back_populates="delivery_person")

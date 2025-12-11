@@ -158,7 +158,23 @@
   display: block;
 }
 
-.dish-card-wide .dish-image {
+.dish-image-container {
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 2px solid #E8E0D8;
+}
+
+.dish-image-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dish-card-wide .dish-image, 
+.dish-card-wide .dish-image-container {
   height: 240px;
   min-height: 240px;
 }
@@ -368,4 +384,3 @@
     padding: 0 10px;
   }
 }
-
